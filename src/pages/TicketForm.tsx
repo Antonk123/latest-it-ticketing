@@ -36,6 +36,7 @@ const TicketForm = () => {
     category: undefined as TicketCategory | undefined,
     requesterId: '',
     notes: '',
+    solution: '',
   });
 
   useEffect(() => {
@@ -48,6 +49,7 @@ const TicketForm = () => {
         category: existingTicket.category,
         requesterId: existingTicket.requesterId,
         notes: existingTicket.notes || '',
+        solution: existingTicket.solution || '',
       });
     }
   }, [existingTicket]);
@@ -100,14 +102,17 @@ const TicketForm = () => {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description *</Label>
+                <Label htmlFor="description">
+                  Description * <span className="text-xs text-muted-foreground">(Markdown supported)</span>
+                </Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Detailed description of the problem..."
-                  rows={4}
+                  placeholder="Detailed description of the problem... (supports **bold**, *italic*, `code`, lists, etc.)"
+                  rows={6}
                   required
+                  className="font-mono text-sm"
                 />
               </div>
 
@@ -198,6 +203,20 @@ const TicketForm = () => {
                     </Select>
                   </div>
                 )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="solution">
+                  Solution <span className="text-xs text-muted-foreground">(Markdown supported)</span>
+                </Label>
+                <Textarea
+                  id="solution"
+                  value={formData.solution}
+                  onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
+                  placeholder="Document how the issue was fixed..."
+                  rows={4}
+                  className="font-mono text-sm"
+                />
               </div>
 
               <div className="space-y-2">
