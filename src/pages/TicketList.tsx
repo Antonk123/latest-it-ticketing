@@ -1,8 +1,9 @@
 import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { Plus, Filter } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
+import { useCategories } from '@/hooks/useCategories';
 import { Layout } from '@/components/Layout';
 import { TicketTable } from '@/components/TicketTable';
 import { SearchBar } from '@/components/SearchBar';
@@ -14,15 +15,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TicketStatus, TicketPriority, TicketCategory, TICKET_CATEGORIES } from '@/types/ticket';
+import { TicketStatus, TicketPriority } from '@/types/ticket';
 
 const TicketList = () => {
   const { tickets } = useTickets();
   const { users } = useUsers();
+  const { categories } = useCategories();
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<TicketStatus | 'all'>('all');
   const [priorityFilter, setPriorityFilter] = useState<TicketPriority | 'all'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<TicketCategory | 'all'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string | 'all'>('all');
 
   const activeTickets = useMemo(() => {
     return tickets.filter(t => t.status !== 'closed');
@@ -93,14 +95,14 @@ const TicketList = () => {
                 <SelectItem value="critical">Critical</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as TicketCategory | 'all')}>
+            <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v)}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {TICKET_CATEGORIES.map(cat => (
-                  <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                {categories.map(cat => (
+                  <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>

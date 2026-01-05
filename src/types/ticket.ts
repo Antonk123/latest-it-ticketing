@@ -1,16 +1,21 @@
 export type TicketStatus = 'open' | 'in-progress' | 'resolved' | 'closed';
 export type TicketPriority = 'low' | 'medium' | 'high' | 'critical';
-export type TicketCategory = 'windows' | 'mac' | 'network' | 'hardware' | 'software' | 'email' | 'security' | 'other';
 
-export const TICKET_CATEGORIES: { value: TicketCategory; label: string }[] = [
-  { value: 'windows', label: 'Windows' },
-  { value: 'mac', label: 'Mac' },
-  { value: 'network', label: 'Network' },
-  { value: 'hardware', label: 'Hardware' },
-  { value: 'software', label: 'Software' },
-  { value: 'email', label: 'Email' },
-  { value: 'security', label: 'Security' },
-  { value: 'other', label: 'Other' },
+export interface Category {
+  id: string;
+  label: string;
+  icon?: string;
+}
+
+export const DEFAULT_CATEGORIES: Category[] = [
+  { id: 'windows', label: 'Windows', icon: 'monitor' },
+  { id: 'mac', label: 'Mac', icon: 'apple' },
+  { id: 'network', label: 'Network', icon: 'wifi' },
+  { id: 'hardware', label: 'Hardware', icon: 'hard-drive' },
+  { id: 'software', label: 'Software', icon: 'app-window' },
+  { id: 'email', label: 'Email', icon: 'mail' },
+  { id: 'security', label: 'Security', icon: 'shield' },
+  { id: 'other', label: 'Other', icon: 'help-circle' },
 ];
 
 export interface User {
@@ -27,7 +32,7 @@ export interface Ticket {
   description: string;
   status: TicketStatus;
   priority: TicketPriority;
-  category?: TicketCategory;
+  category?: string;
   requesterId: string;
   createdAt: Date;
   updatedAt: Date;
