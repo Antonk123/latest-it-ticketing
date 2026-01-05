@@ -37,15 +37,23 @@ export const GlobalSearch = ({ tickets, users }: GlobalSearchProps) => {
     return () => document.removeEventListener('keydown', down);
   }, []);
 
+  const getUserName = (userId: string) => {
+    return users.find(u => u.id === userId)?.name || '';
+  };
+
   const filteredTickets = useMemo(() => {
     if (!search) return tickets.slice(0, 5);
     const lower = search.toLowerCase();
-    return tickets.filter(t => 
-      t.title.toLowerCase().includes(lower) ||
-      t.description.toLowerCase().includes(lower) ||
-      t.category?.toLowerCase().includes(lower)
-    ).slice(0, 10);
-  }, [tickets, search]);
+    return tickets.filter(t => {
+      const requesterName = getUserName(t.requesterId).toLowerCase();
+      return (
+        t.title.toLowerCase().includes(lower) ||
+        t.description.toLowerCase().includes(lower) ||
+        t.category?.toLowerCase().includes(lower) ||
+        requesterName.includes(lower)
+      );
+    }).slice(0, 10);
+  }, [tickets, users, search]);
 
   const filteredUsers = useMemo(() => {
     if (!search) return users.slice(0, 5);
@@ -106,6 +114,11 @@ export const GlobalSearch = ({ tickets, users }: GlobalSearchProps) => {
                     <StatusBadge status={ticket.status} />
                     <PriorityBadge priority={ticket.priority} />
                     <CategoryBadge category={ticket.category} />
+                    {getUserName(ticket.requesterId) && (
+                      <span className="text-xs text-muted-foreground">
+                        • {getUserName(ticket.requesterId)}
+                      </span>
+                    )}
                   </div>
                 </CommandItem>
               ))}
