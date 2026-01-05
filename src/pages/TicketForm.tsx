@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
+import { useCategories } from '@/hooks/useCategories';
 import { Layout } from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TicketPriority, TicketStatus, TicketCategory, TICKET_CATEGORIES } from '@/types/ticket';
+import { TicketPriority, TicketStatus } from '@/types/ticket';
 import { toast } from 'sonner';
 
 const TicketForm = () => {
@@ -24,6 +25,7 @@ const TicketForm = () => {
   const navigate = useNavigate();
   const { tickets, addTicket, updateTicket, getTicketById } = useTickets();
   const { users } = useUsers();
+  const { categories } = useCategories();
   
   const isEditing = !!id;
   const existingTicket = isEditing ? getTicketById(id) : null;
@@ -33,7 +35,7 @@ const TicketForm = () => {
     description: '',
     priority: 'medium' as TicketPriority,
     status: 'open' as TicketStatus,
-    category: undefined as TicketCategory | undefined,
+    category: undefined as string | undefined,
     requesterId: '',
     notes: '',
     solution: '',
@@ -169,14 +171,14 @@ const TicketForm = () => {
                   <Label>Category</Label>
                   <Select 
                     value={formData.category || ''} 
-                    onValueChange={(v) => setFormData({ ...formData, category: v as TicketCategory })}
+                    onValueChange={(v) => setFormData({ ...formData, category: v })}
                   >
                     <SelectTrigger>
                       <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {TICKET_CATEGORIES.map(cat => (
-                        <SelectItem key={cat.value} value={cat.value}>
+                      {categories.map(cat => (
+                        <SelectItem key={cat.id} value={cat.id}>
                           {cat.label}
                         </SelectItem>
                       ))}

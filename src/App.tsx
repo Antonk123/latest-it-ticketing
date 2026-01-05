@@ -10,6 +10,7 @@ import TicketForm from "./pages/TicketForm";
 import TicketDetail from "./pages/TicketDetail";
 import Archive from "./pages/Archive";
 import UserList from "./pages/UserList";
+import Settings from "./pages/Settings";
 import Login from "./pages/Login";
 import NotFound from "./pages/NotFound";
 
@@ -45,6 +46,7 @@ const AppRoutes = () => (
     <Route path="/tickets/:id/edit" element={<ProtectedRoute><TicketForm /></ProtectedRoute>} />
     <Route path="/archive" element={<ProtectedRoute><Archive /></ProtectedRoute>} />
     <Route path="/users" element={<ProtectedRoute><UserList /></ProtectedRoute>} />
+    <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );
