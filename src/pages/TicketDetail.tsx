@@ -6,6 +6,7 @@ import { useUsers } from '@/hooks/useUsers';
 import { Layout } from '@/components/Layout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
+import { CategoryBadge } from '@/components/CategoryBadge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -112,6 +113,7 @@ const TicketDetail = () => {
                 <div className="flex items-center gap-3 flex-wrap">
                   <StatusBadge status={ticket.status} />
                   <PriorityBadge priority={ticket.priority} />
+                  <CategoryBadge category={ticket.category} />
                 </div>
               </div>
             </div>

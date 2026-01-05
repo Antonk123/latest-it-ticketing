@@ -11,6 +11,9 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { GlobalSearch } from '@/components/GlobalSearch';
+import { useTickets } from '@/hooks/useTickets';
+import { useUsers } from '@/hooks/useUsers';
 
 interface LayoutProps {
   children: ReactNode;
@@ -26,6 +29,8 @@ const navItems = [
 export const Layout = ({ children }: LayoutProps) => {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const { tickets } = useTickets();
+  const { users } = useUsers();
 
   return (
     <div className="min-h-screen flex bg-background">
@@ -96,9 +101,15 @@ export const Layout = ({ children }: LayoutProps) => {
           <button onClick={() => setSidebarOpen(true)}>
             <Menu className="w-6 h-6" />
           </button>
-          <div className="flex items-center gap-2">
-            <Ticket className="w-5 h-5 text-primary" />
-            <span className="font-semibold">IT Tickets</span>
+          <div className="flex-1">
+            <GlobalSearch tickets={tickets} users={users} />
+          </div>
+        </div>
+
+        {/* Desktop header with search */}
+        <div className="hidden lg:block sticky top-0 z-30 bg-background border-b p-4">
+          <div className="max-w-md">
+            <GlobalSearch tickets={tickets} users={users} />
           </div>
         </div>
 
