@@ -55,12 +55,12 @@ export const Layout = ({
           </button>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 border-0 border-accent shadow-none opacity-100">
+        <nav className="flex-1 p-4 space-y-1">
           {navItems.map(item => {
           const isActive = location.pathname === item.path;
-          return <Link key={item.path} to={item.path} onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-lg transition-colors", isActive ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")}>
-                <item.icon className="w-5 h-5 text-[#18e2c7]" />
-                <span className="font-medium text-secondary-foreground bg-[#575757]">{item.label}</span>
+          return <Link key={item.path} to={item.path} onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-lg transition-colors", isActive ? "bg-sidebar-accent text-sidebar-accent-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground")}>
+                <item.icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
               </Link>;
         })}
         </nav>
