@@ -1,8 +1,9 @@
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText, Lightbulb } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
+import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { Layout } from '@/components/Layout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
@@ -138,7 +139,9 @@ const TicketDetail = () => {
             {/* Description */}
             <div>
               <h3 className="font-medium text-foreground mb-2">Description</h3>
-              <p className="text-muted-foreground whitespace-pre-wrap">{ticket.description}</p>
+              <div className="bg-muted/30 p-4 rounded-lg">
+                <MarkdownRenderer content={ticket.description} />
+              </div>
             </div>
 
             {/* Meta Info */}
@@ -178,6 +181,19 @@ const TicketDetail = () => {
                 </div>
               )}
             </div>
+
+            {/* Solution */}
+            {ticket.solution && (
+              <div className="pt-4 border-t">
+                <div className="flex items-center gap-2 mb-2">
+                  <Lightbulb className="w-4 h-4 text-primary" />
+                  <h3 className="font-medium text-foreground">Solution</h3>
+                </div>
+                <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
+                  <MarkdownRenderer content={ticket.solution} />
+                </div>
+              </div>
+            )}
 
             {/* Notes */}
             {ticket.notes && (

@@ -34,4 +34,5 @@ export interface Ticket {
   resolvedAt?: Date;
   closedAt?: Date;
   notes?: string;
+  solution?: string;
 }
