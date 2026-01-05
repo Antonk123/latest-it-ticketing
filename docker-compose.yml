@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: it-ticketing-backend
+    restart: unless-stopped
+    ports:
+      - "3002:3001"
+    volumes:
+      - ticket-data:/app/data
+    environment:
+      - NODE_ENV=production
+    networks:
+      - ticketing
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+      args:
+        VITE_API_URL: http://10.10.10.18:3002/api
+    container_name: it-ticketing-frontend
+    restart: unless-stopped
+    ports:
+      - "8082:80"
+    depends_on:
+      - backend
+    networks:
+      - ticketing
+
+networks:
+  ticketing:
+    driver: bridge
+
+volumes:
+  ticket-data:
+    driver: local
