@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { Ticket, User } from '@/types/ticket';
 import { StatusBadge } from './StatusBadge';
 import { PriorityBadge } from './PriorityBadge';
+import { CategoryBadge } from './CategoryBadge';
 import {
   Table,
   TableBody,
@@ -39,6 +40,7 @@ export const TicketTable = ({ tickets, users }: TicketTableProps) => {
             <TableHead>Title</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Priority</TableHead>
+            <TableHead>Category</TableHead>
             <TableHead>Requester</TableHead>
             <TableHead>Created</TableHead>
           </TableRow>
@@ -59,6 +61,9 @@ export const TicketTable = ({ tickets, users }: TicketTableProps) => {
               </TableCell>
               <TableCell>
                 <PriorityBadge priority={ticket.priority} />
+              </TableCell>
+              <TableCell>
+                <CategoryBadge category={ticket.category} />
               </TableCell>
               <TableCell className="text-muted-foreground">
                 {getUserName(ticket.requesterId)}

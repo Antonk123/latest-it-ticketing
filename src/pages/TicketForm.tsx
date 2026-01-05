@@ -16,7 +16,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TicketPriority, TicketStatus } from '@/types/ticket';
+import { TicketPriority, TicketStatus, TicketCategory, TICKET_CATEGORIES } from '@/types/ticket';
 import { toast } from 'sonner';
 
 const TicketForm = () => {
@@ -33,6 +33,7 @@ const TicketForm = () => {
     description: '',
     priority: 'medium' as TicketPriority,
     status: 'open' as TicketStatus,
+    category: undefined as TicketCategory | undefined,
     requesterId: '',
     notes: '',
   });
@@ -44,6 +45,7 @@ const TicketForm = () => {
         description: existingTicket.description,
         priority: existingTicket.priority,
         status: existingTicket.status,
+        category: existingTicket.category,
         requesterId: existingTicket.requesterId,
         notes: existingTicket.notes || '',
       });
@@ -157,25 +159,46 @@ const TicketForm = () => {
                 </div>
               </div>
 
-              {isEditing && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Status</Label>
+                  <Label>Category</Label>
                   <Select 
-                    value={formData.status} 
-                    onValueChange={(v) => setFormData({ ...formData, status: v as TicketStatus })}
+                    value={formData.category || ''} 
+                    onValueChange={(v) => setFormData({ ...formData, category: v as TicketCategory })}
                   >
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="open">Open</SelectItem>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                      <SelectItem value="resolved">Resolved</SelectItem>
-                      <SelectItem value="closed">Closed</SelectItem>
+                      {TICKET_CATEGORIES.map(cat => (
+                        <SelectItem key={cat.value} value={cat.value}>
+                          {cat.label}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>
-              )}
+
+                {isEditing && (
+                  <div className="space-y-2">
+                    <Label>Status</Label>
+                    <Select 
+                      value={formData.status} 
+                      onValueChange={(v) => setFormData({ ...formData, status: v as TicketStatus })}
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="open">Open</SelectItem>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                        <SelectItem value="resolved">Resolved</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
 
               <div className="space-y-2">
                 <Label htmlFor="notes">Internal Notes</Label>

@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { TicketStatus, TicketPriority } from '@/types/ticket';
+import { TicketStatus, TicketPriority, TicketCategory, TICKET_CATEGORIES } from '@/types/ticket';
 
 const TicketList = () => {
   const { tickets } = useTickets();
@@ -22,6 +22,7 @@ const TicketList = () => {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<TicketStatus | 'all'>('all');
   const [priorityFilter, setPriorityFilter] = useState<TicketPriority | 'all'>('all');
+  const [categoryFilter, setCategoryFilter] = useState<TicketCategory | 'all'>('all');
 
   const activeTickets = useMemo(() => {
     return tickets.filter(t => t.status !== 'closed');
@@ -35,10 +36,11 @@ const TicketList = () => {
       
       const matchesStatus = statusFilter === 'all' || ticket.status === statusFilter;
       const matchesPriority = priorityFilter === 'all' || ticket.priority === priorityFilter;
+      const matchesCategory = categoryFilter === 'all' || ticket.category === categoryFilter;
 
-      return matchesSearch && matchesStatus && matchesPriority;
+      return matchesSearch && matchesStatus && matchesPriority && matchesCategory;
     }).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
-  }, [activeTickets, search, statusFilter, priorityFilter]);
+  }, [activeTickets, search, statusFilter, priorityFilter, categoryFilter]);
 
   return (
     <Layout>
@@ -67,7 +69,7 @@ const TicketList = () => {
               placeholder="Search tickets..."
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap">
             <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as TicketStatus | 'all')}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Status" />
@@ -89,6 +91,17 @@ const TicketList = () => {
                 <SelectItem value="medium">Medium</SelectItem>
                 <SelectItem value="high">High</SelectItem>
                 <SelectItem value="critical">Critical</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v as TicketCategory | 'all')}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                {TICKET_CATEGORIES.map(cat => (
+                  <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
