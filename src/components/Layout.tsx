@@ -1,11 +1,13 @@
 import { ReactNode, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Ticket, Archive, Users, Plus, Menu, X } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Ticket, Archive, Users, Plus, Menu, X, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { GlobalSearch } from '@/components/GlobalSearch';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
+import { useAuth } from '@/contexts/AuthContext';
+
 interface LayoutProps {
   children: ReactNode;
 }
@@ -30,13 +32,16 @@ export const Layout = ({
   children
 }: LayoutProps) => {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const {
-    tickets
-  } = useTickets();
-  const {
-    users
-  } = useUsers();
+  const { tickets } = useTickets();
+  const { users } = useUsers();
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
   return <div className="min-h-screen flex bg-background">
       {/* Mobile overlay */}
       {sidebarOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />}
@@ -65,13 +70,21 @@ export const Layout = ({
         })}
         </nav>
 
-        <div className="p-4 border-t border-sidebar-border">
+        <div className="p-4 border-t border-sidebar-border space-y-2">
           <Link to="/tickets/new" onClick={() => setSidebarOpen(false)}>
             <Button className="w-full gap-2" size="lg">
               <Plus className="w-4 h-4" />
               New Ticket
             </Button>
           </Link>
+          <Button 
+            variant="ghost" 
+            className="w-full gap-2 text-muted-foreground hover:text-foreground" 
+            onClick={handleLogout}
+          >
+            <LogOut className="w-4 h-4" />
+            Logout
+          </Button>
         </div>
       </aside>
 
