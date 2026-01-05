@@ -60,7 +60,7 @@ export const Layout = ({
           const isActive = location.pathname === item.path;
           return <Link key={item.path} to={item.path} onClick={() => setSidebarOpen(false)} className={cn("flex items-center gap-3 px-4 py-3 rounded-lg transition-colors", isActive ? "bg-sidebar-accent text-sidebar-primary" : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground")}>
                 <item.icon className="w-5 h-5 text-[#18e2c7]" />
-                <span className="font-medium bg-popover text-secondary-foreground">{item.label}</span>
+                <span className="font-medium text-secondary-foreground bg-[#575757]">{item.label}</span>
               </Link>;
         })}
         </nav>
