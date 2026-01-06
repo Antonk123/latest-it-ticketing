@@ -1,4 +1,5 @@
 import ReactMarkdown from 'react-markdown';
+import rehypeSanitize from 'rehype-sanitize';
 import { cn } from '@/lib/utils';
 
 interface MarkdownRendererProps {
@@ -23,7 +24,7 @@ export const MarkdownRenderer = ({ content, className }: MarkdownRendererProps) 
         className
       )}
     >
-      <ReactMarkdown>{content}</ReactMarkdown>
+      <ReactMarkdown rehypePlugins={[rehypeSanitize]}>{content}</ReactMarkdown>
     </div>
   );
 };
