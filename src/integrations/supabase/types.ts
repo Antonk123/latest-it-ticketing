@@ -100,6 +100,44 @@ export type Database = {
           },
         ]
       }
+      ticket_checklists: {
+        Row: {
+          completed: boolean
+          created_at: string
+          id: string
+          label: string
+          position: number
+          ticket_id: string
+          updated_at: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          label: string
+          position?: number
+          ticket_id: string
+          updated_at?: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          id?: string
+          label?: string
+          position?: number
+          ticket_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_checklists_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tickets: {
         Row: {
           category_id: string | null
@@ -107,9 +145,11 @@ export type Database = {
           created_at: string
           description: string
           id: string
+          notes: string | null
           priority: string
           requester_id: string | null
           resolved_at: string | null
+          solution: string | null
           status: string
           title: string
           updated_at: string
@@ -120,9 +160,11 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          notes?: string | null
           priority?: string
           requester_id?: string | null
           resolved_at?: string | null
+          solution?: string | null
           status?: string
           title: string
           updated_at?: string
@@ -133,9 +175,11 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          notes?: string | null
           priority?: string
           requester_id?: string | null
           resolved_at?: string | null
+          solution?: string | null
           status?: string
           title?: string
           updated_at?: string

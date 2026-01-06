@@ -5,8 +5,10 @@ import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
 import { useCategories } from '@/hooks/useCategories';
 import { useTicketAttachments, TicketAttachment } from '@/hooks/useTicketAttachments';
+import { useTicketChecklists } from '@/hooks/useTicketChecklists';
 import { Layout } from '@/components/Layout';
 import { FileUpload } from '@/components/FileUpload';
+import { TicketChecklist } from '@/components/TicketChecklist';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -35,6 +37,14 @@ const TicketForm = () => {
     uploadAttachment, 
     deleteAttachment 
   } = useTicketAttachments();
+  const {
+    items: checklistItems,
+    fetchChecklists,
+    addChecklistItem,
+    updateChecklistItem,
+    deleteChecklistItem,
+    bulkAddChecklistItems,
+  } = useTicketChecklists();
   
   const isEditing = !!id;
   const existingTicket = isEditing ? getTicketById(id) : null;
@@ -50,6 +60,7 @@ const TicketForm = () => {
     solution: '',
   });
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingChecklistItems, setPendingChecklistItems] = useState<{ id: string; label: string; completed: boolean }[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
@@ -70,8 +81,9 @@ const TicketForm = () => {
   useEffect(() => {
     if (id) {
       fetchAttachments(id);
+      fetchChecklists(id);
     }
-  }, [id, fetchAttachments]);
+  }, [id, fetchAttachments, fetchChecklists]);
 
   const handleFilesSelect = (files: File[]) => {
     setPendingFiles((prev) => [...prev, ...files]);
@@ -88,6 +100,17 @@ const TicketForm = () => {
     } else {
       toast.error('Failed to delete attachment');
     }
+  };
+
+  const handleAddPendingChecklist = (label: string) => {
+    setPendingChecklistItems(prev => [
+      ...prev,
+      { id: `pending-${Date.now()}`, label, completed: false }
+    ]);
+  };
+
+  const handleDeletePendingChecklist = (id: string) => {
+    setPendingChecklistItems(prev => prev.filter(item => item.id !== id));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -108,15 +131,25 @@ const TicketForm = () => {
         for (const file of pendingFiles) {
           await uploadAttachment(id, file);
         }
+
+        // Add pending checklist items
+        if (pendingChecklistItems.length > 0) {
+          await bulkAddChecklistItems(id, pendingChecklistItems.map(i => i.label));
+        }
         
         toast.success('Ticket updated successfully');
       } else {
         const newTicket = await addTicket(formData);
         
-        if (newTicket && pendingFiles.length > 0) {
+        if (newTicket) {
           // Upload pending files to the new ticket
           for (const file of pendingFiles) {
             await uploadAttachment(newTicket.id, file);
+          }
+          
+          // Add pending checklist items to the new ticket
+          if (pendingChecklistItems.length > 0) {
+            await bulkAddChecklistItems(newTicket.id, pendingChecklistItems.map(i => i.label));
           }
         }
         
@@ -279,6 +312,22 @@ const TicketForm = () => {
                   isUploading={isUploading}
                   disabled={isSubmitting}
                 />
+              </div>
+
+              {/* Checklist */}
+              <div className="space-y-2">
+                <Label>Checklist / Todo Items</Label>
+                <div className="border rounded-lg p-4">
+                  <TicketChecklist
+                    items={checklistItems}
+                    pendingItems={pendingChecklistItems}
+                    onToggle={(id, completed) => updateChecklistItem(id, { completed })}
+                    onDelete={deleteChecklistItem}
+                    onAdd={(label) => addChecklistItem(id!, label)}
+                    onPendingAdd={handleAddPendingChecklist}
+                    onPendingDelete={handleDeletePendingChecklist}
+                  />
+                </div>
               </div>
 
               <div className="space-y-2">
