@@ -1,6 +1,6 @@
 import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Ticket, Archive, Users, Plus, Menu, X, LogOut, Settings } from 'lucide-react';
+import { LayoutDashboard, Ticket, Archive, Users, Plus, Menu, X, LogOut, Settings, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { GlobalSearch } from '@/components/GlobalSearch';
@@ -19,6 +19,10 @@ const navItems = [{
   path: '/tickets',
   icon: Ticket,
   label: 'All Tickets'
+}, {
+  path: '/reports',
+  icon: BarChart3,
+  label: 'Reports'
 }, {
   path: '/archive',
   icon: Archive,
