@@ -1,5 +1,5 @@
 import { ReactNode, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Ticket, Archive, Users, Plus, Menu, X, LogOut, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -36,15 +36,14 @@ export const Layout = ({
   children
 }: LayoutProps) => {
   const location = useLocation();
-  const navigate = useNavigate();
+  
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { tickets } = useTickets();
   const { users } = useUsers();
-  const { logout } = useAuth();
+  const { signOut, user } = useAuth();
 
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
+  const handleLogout = async () => {
+    await signOut();
   };
   return <div className="min-h-screen flex bg-background">
       {/* Mobile overlay */}
@@ -81,13 +80,18 @@ export const Layout = ({
               New Ticket
             </Button>
           </Link>
+          {user && (
+            <p className="text-xs text-muted-foreground px-2 truncate">
+              {user.email}
+            </p>
+          )}
           <Button 
             variant="ghost" 
             className="w-full gap-2 text-muted-foreground hover:text-foreground" 
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4" />
-            Logout
+            Sign Out
           </Button>
         </div>
       </aside>

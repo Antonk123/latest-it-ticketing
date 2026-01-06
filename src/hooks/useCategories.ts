@@ -1,57 +1,103 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Category, DEFAULT_CATEGORIES } from '@/types/ticket';
-import { generateId } from '@/lib/storage';
-
-const CATEGORIES_KEY = 'it_categories';
+import { supabase } from '@/integrations/supabase/client';
+import { Category } from '@/types/ticket';
 
 export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    const data = localStorage.getItem(CATEGORIES_KEY);
-    if (data) {
-      setCategories(JSON.parse(data));
-    } else {
-      // Initialize with defaults
-      localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
-      setCategories(DEFAULT_CATEGORIES);
+  const fetchCategories = useCallback(async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error fetching categories:', error);
+      setIsLoading(false);
+      return;
     }
+
+    const mapped: Category[] = (data || []).map((c) => ({
+      id: c.id,
+      label: c.label,
+    }));
+
+    setCategories(mapped);
+    setIsLoading(false);
   }, []);
 
-  const saveCategories = (updated: Category[]) => {
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updated));
-    setCategories(updated);
-  };
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
-  const addCategory = useCallback((label: string) => {
-    const id = generateId();
-    const newCategory: Category = { id, label, icon: 'tag' };
-    const updated = [...categories, newCategory];
-    saveCategories(updated);
+  const addCategory = useCallback(async (label: string) => {
+    const name = label.toLowerCase().replace(/\s+/g, '-');
+    
+    const { data, error } = await supabase
+      .from('categories')
+      .insert({ name, label })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding category:', error);
+      return null;
+    }
+
+    const newCategory: Category = {
+      id: data.id,
+      label: data.label,
+    };
+
+    setCategories((prev) => [...prev, newCategory]);
     return newCategory;
-  }, [categories]);
+  }, []);
 
-  const updateCategory = useCallback((id: string, label: string) => {
-    const updated = categories.map(c => 
-      c.id === id ? { ...c, label } : c
+  const updateCategory = useCallback(async (id: string, label: string) => {
+    const name = label.toLowerCase().replace(/\s+/g, '-');
+    
+    const { error } = await supabase
+      .from('categories')
+      .update({ name, label })
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating category:', error);
+      return;
+    }
+
+    setCategories((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, label } : c))
     );
-    saveCategories(updated);
-  }, [categories]);
+  }, []);
 
-  const deleteCategory = useCallback((id: string) => {
-    const updated = categories.filter(c => c.id !== id);
-    saveCategories(updated);
-  }, [categories]);
+  const deleteCategory = useCallback(async (id: string) => {
+    const { error } = await supabase.from('categories').delete().eq('id', id);
 
-  const getCategoryLabel = useCallback((id: string) => {
-    return categories.find(c => c.id === id)?.label || id;
-  }, [categories]);
+    if (error) {
+      console.error('Error deleting category:', error);
+      return;
+    }
+
+    setCategories((prev) => prev.filter((c) => c.id !== id));
+  }, []);
+
+  const getCategoryLabel = useCallback(
+    (id: string) => {
+      return categories.find((c) => c.id === id)?.label || id;
+    },
+    [categories]
+  );
 
   return {
     categories,
+    isLoading,
     addCategory,
     updateCategory,
     deleteCategory,
     getCategoryLabel,
+    refetch: fetchCategories,
   };
 };

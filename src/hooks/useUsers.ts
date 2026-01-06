@@ -1,49 +1,115 @@
 import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { User } from '@/types/ticket';
-import { getUsers, saveUsers, generateId } from '@/lib/storage';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    setUsers(getUsers());
+  const fetchUsers = useCallback(async () => {
+    setIsLoading(true);
+    const { data, error } = await supabase
+      .from('contacts')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching users:', error);
+      setIsLoading(false);
+      return;
+    }
+
+    const mapped: User[] = (data || []).map((u) => ({
+      id: u.id,
+      name: u.name,
+      email: u.email,
+      department: u.company || undefined,
+      createdAt: new Date(u.created_at),
+    }));
+
+    setUsers(mapped);
+    setIsLoading(false);
   }, []);
 
-  const addUser = useCallback((user: Omit<User, 'id' | 'createdAt'>) => {
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const addUser = useCallback(async (user: Omit<User, 'id' | 'createdAt'>) => {
+    const { data, error } = await supabase
+      .from('contacts')
+      .insert({
+        name: user.name,
+        email: user.email,
+        company: user.department || null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error adding user:', error);
+      return null;
+    }
+
     const newUser: User = {
-      ...user,
-      id: generateId(),
-      createdAt: new Date(),
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      department: data.company || undefined,
+      createdAt: new Date(data.created_at),
     };
-    const updated = [...users, newUser];
-    setUsers(updated);
-    saveUsers(updated);
+
+    setUsers((prev) => [newUser, ...prev]);
     return newUser;
-  }, [users]);
+  }, []);
 
-  const updateUser = useCallback((id: string, updates: Partial<User>) => {
-    const updated = users.map(u => 
-      u.id === id ? { ...u, ...updates } : u
+  const updateUser = useCallback(async (id: string, updates: Partial<User>) => {
+    const updateData: Record<string, unknown> = {};
+    
+    if (updates.name !== undefined) updateData.name = updates.name;
+    if (updates.email !== undefined) updateData.email = updates.email;
+    if (updates.department !== undefined) updateData.company = updates.department || null;
+
+    const { error } = await supabase
+      .from('contacts')
+      .update(updateData)
+      .eq('id', id);
+
+    if (error) {
+      console.error('Error updating user:', error);
+      return;
+    }
+
+    setUsers((prev) =>
+      prev.map((u) => (u.id === id ? { ...u, ...updates } : u))
     );
-    setUsers(updated);
-    saveUsers(updated);
-  }, [users]);
+  }, []);
 
-  const deleteUser = useCallback((id: string) => {
-    const updated = users.filter(u => u.id !== id);
-    setUsers(updated);
-    saveUsers(updated);
-  }, [users]);
+  const deleteUser = useCallback(async (id: string) => {
+    const { error } = await supabase.from('contacts').delete().eq('id', id);
 
-  const getUserById = useCallback((id: string) => {
-    return users.find(u => u.id === id);
-  }, [users]);
+    if (error) {
+      console.error('Error deleting user:', error);
+      return;
+    }
+
+    setUsers((prev) => prev.filter((u) => u.id !== id));
+  }, []);
+
+  const getUserById = useCallback(
+    (id: string) => {
+      return users.find((u) => u.id === id);
+    },
+    [users]
+  );
 
   return {
     users,
+    isLoading,
     addUser,
     updateUser,
     deleteUser,
     getUserById,
+    refetch: fetchUsers,
   };
 };
