@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Ticket, TicketStatus, TicketPriority } from '@/types/ticket';
+import { ticketInsertSchema, ticketUpdateSchema, getValidationError } from '@/lib/validations';
+import { toast } from 'sonner';
 
 export const useTickets = () => {
   const [tickets, setTickets] = useState<Ticket[]>([]);
@@ -44,23 +46,32 @@ export const useTickets = () => {
   }, [fetchTickets]);
 
   const addTicket = useCallback(async (ticket: Omit<Ticket, 'id' | 'createdAt' | 'updatedAt'>) => {
+    // Validate input
+    const validation = ticketInsertSchema.safeParse(ticket);
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid ticket data');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('tickets')
       .insert({
-        title: ticket.title,
-        description: ticket.description,
-        status: ticket.status,
-        priority: ticket.priority,
-        category_id: ticket.category || null,
-        requester_id: ticket.requesterId || null,
-        notes: ticket.notes || null,
-        solution: ticket.solution || null,
+        title: validation.data.title,
+        description: validation.data.description,
+        status: validation.data.status,
+        priority: validation.data.priority,
+        category_id: validation.data.category || null,
+        requester_id: validation.data.requesterId || null,
+        notes: validation.data.notes || null,
+        solution: validation.data.solution || null,
       })
       .select()
       .single();
 
     if (error) {
       console.error('Error adding ticket:', error);
+      toast.error('Failed to create ticket');
       return null;
     }
 
@@ -83,21 +94,30 @@ export const useTickets = () => {
   }, []);
 
   const updateTicket = useCallback(async (id: string, updates: Partial<Ticket>) => {
+    // Validate input
+    const validation = ticketUpdateSchema.safeParse(updates);
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid ticket data');
+      return;
+    }
+
+    const validated = validation.data;
     const updateData: Record<string, unknown> = {};
     
-    if (updates.title !== undefined) updateData.title = updates.title;
-    if (updates.description !== undefined) updateData.description = updates.description;
-    if (updates.status !== undefined) updateData.status = updates.status;
-    if (updates.priority !== undefined) updateData.priority = updates.priority;
-    if (updates.category !== undefined) updateData.category_id = updates.category || null;
-    if (updates.requesterId !== undefined) updateData.requester_id = updates.requesterId || null;
-    if (updates.notes !== undefined) updateData.notes = updates.notes || null;
-    if (updates.solution !== undefined) updateData.solution = updates.solution || null;
+    if (validated.title !== undefined) updateData.title = validated.title;
+    if (validated.description !== undefined) updateData.description = validated.description;
+    if (validated.status !== undefined) updateData.status = validated.status;
+    if (validated.priority !== undefined) updateData.priority = validated.priority;
+    if (validated.category !== undefined) updateData.category_id = validated.category || null;
+    if (validated.requesterId !== undefined) updateData.requester_id = validated.requesterId || null;
+    if (validated.notes !== undefined) updateData.notes = validated.notes || null;
+    if (validated.solution !== undefined) updateData.solution = validated.solution || null;
     
-    if (updates.status === 'resolved') {
+    if (validated.status === 'resolved') {
       updateData.resolved_at = new Date().toISOString();
     }
-    if (updates.status === 'closed') {
+    if (validated.status === 'closed') {
       updateData.closed_at = new Date().toISOString();
     }
 
@@ -108,6 +128,7 @@ export const useTickets = () => {
 
     if (error) {
       console.error('Error updating ticket:', error);
+      toast.error('Failed to update ticket');
       return;
     }
 

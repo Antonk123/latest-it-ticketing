@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { checklistItemSchema, getValidationError } from '@/lib/validations';
+import { toast } from 'sonner';
 
 export interface ChecklistItem {
   id: string;
@@ -37,6 +39,14 @@ export const useTicketChecklists = (ticketId?: string) => {
   }, [ticketId]);
 
   const addChecklistItem = useCallback(async (targetTicketId: string, label: string) => {
+    // Validate input
+    const validation = checklistItemSchema.safeParse({ label });
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid checklist item');
+      return null;
+    }
+
     const maxPosition = items.length > 0 
       ? Math.max(...items.map(i => i.position)) + 1 
       : 0;
@@ -45,7 +55,7 @@ export const useTicketChecklists = (ticketId?: string) => {
       .from('ticket_checklists')
       .insert({
         ticket_id: targetTicketId,
-        label,
+        label: validation.data.label,
         position: maxPosition,
       })
       .select()
@@ -53,6 +63,7 @@ export const useTicketChecklists = (ticketId?: string) => {
 
     if (error) {
       console.error('Error adding checklist item:', error);
+      toast.error('Failed to add checklist item');
       return null;
     }
 
@@ -95,7 +106,19 @@ export const useTicketChecklists = (ticketId?: string) => {
   const bulkAddChecklistItems = useCallback(async (targetTicketId: string, labels: string[]) => {
     if (labels.length === 0) return [];
 
-    const insertData = labels.map((label, index) => ({
+    // Validate all labels
+    const validatedLabels: string[] = [];
+    for (const label of labels) {
+      const validation = checklistItemSchema.safeParse({ label });
+      if (!validation.success) {
+        const errorMsg = getValidationError(validation.error);
+        toast.error(errorMsg || 'Invalid checklist item');
+        return [];
+      }
+      validatedLabels.push(validation.data.label);
+    }
+
+    const insertData = validatedLabels.map((label, index) => ({
       ticket_id: targetTicketId,
       label,
       position: index,
@@ -108,6 +131,7 @@ export const useTicketChecklists = (ticketId?: string) => {
 
     if (error) {
       console.error('Error bulk adding checklist items:', error);
+      toast.error('Failed to add checklist items');
       return [];
     }
 

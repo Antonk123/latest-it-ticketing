@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Category } from '@/types/ticket';
+import { categorySchema, getValidationError } from '@/lib/validations';
+import { toast } from 'sonner';
 
 export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -33,16 +35,26 @@ export const useCategories = () => {
   }, [fetchCategories]);
 
   const addCategory = useCallback(async (label: string) => {
-    const name = label.toLowerCase().replace(/\s+/g, '-');
+    // Validate input
+    const validation = categorySchema.safeParse({ label });
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid category data');
+      return null;
+    }
+
+    const validatedLabel = validation.data.label;
+    const name = validatedLabel.toLowerCase().replace(/\s+/g, '-');
     
     const { data, error } = await supabase
       .from('categories')
-      .insert({ name, label })
+      .insert({ name, label: validatedLabel })
       .select()
       .single();
 
     if (error) {
       console.error('Error adding category:', error);
+      toast.error('Failed to create category');
       return null;
     }
 
@@ -56,20 +68,30 @@ export const useCategories = () => {
   }, []);
 
   const updateCategory = useCallback(async (id: string, label: string) => {
-    const name = label.toLowerCase().replace(/\s+/g, '-');
+    // Validate input
+    const validation = categorySchema.safeParse({ label });
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid category data');
+      return;
+    }
+
+    const validatedLabel = validation.data.label;
+    const name = validatedLabel.toLowerCase().replace(/\s+/g, '-');
     
     const { error } = await supabase
       .from('categories')
-      .update({ name, label })
+      .update({ name, label: validatedLabel })
       .eq('id', id);
 
     if (error) {
       console.error('Error updating category:', error);
+      toast.error('Failed to update category');
       return;
     }
 
     setCategories((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, label } : c))
+      prev.map((c) => (c.id === id ? { ...c, label: validatedLabel } : c))
     );
   }, []);
 

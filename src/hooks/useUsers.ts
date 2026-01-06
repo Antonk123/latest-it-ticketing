@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { User } from '@/types/ticket';
+import { contactSchema, contactUpdateSchema, getValidationError } from '@/lib/validations';
+import { toast } from 'sonner';
 
 export const useUsers = () => {
   const [users, setUsers] = useState<User[]>([]);
@@ -36,18 +38,27 @@ export const useUsers = () => {
   }, [fetchUsers]);
 
   const addUser = useCallback(async (user: Omit<User, 'id' | 'createdAt'>) => {
+    // Validate input
+    const validation = contactSchema.safeParse(user);
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid contact data');
+      return null;
+    }
+
     const { data, error } = await supabase
       .from('contacts')
       .insert({
-        name: user.name,
-        email: user.email,
-        company: user.department || null,
+        name: validation.data.name,
+        email: validation.data.email,
+        company: validation.data.department || null,
       })
       .select()
       .single();
 
     if (error) {
       console.error('Error adding user:', error);
+      toast.error('Failed to create contact');
       return null;
     }
 
@@ -64,11 +75,20 @@ export const useUsers = () => {
   }, []);
 
   const updateUser = useCallback(async (id: string, updates: Partial<User>) => {
+    // Validate input
+    const validation = contactUpdateSchema.safeParse(updates);
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid contact data');
+      return;
+    }
+
+    const validated = validation.data;
     const updateData: Record<string, unknown> = {};
     
-    if (updates.name !== undefined) updateData.name = updates.name;
-    if (updates.email !== undefined) updateData.email = updates.email;
-    if (updates.department !== undefined) updateData.company = updates.department || null;
+    if (validated.name !== undefined) updateData.name = validated.name;
+    if (validated.email !== undefined) updateData.email = validated.email;
+    if (validated.department !== undefined) updateData.company = validated.department || null;
 
     const { error } = await supabase
       .from('contacts')
@@ -77,6 +97,7 @@ export const useUsers = () => {
 
     if (error) {
       console.error('Error updating user:', error);
+      toast.error('Failed to update contact');
       return;
     }
 
