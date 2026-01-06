@@ -1,8 +1,10 @@
+import { useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText, Lightbulb } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText, Lightbulb, Paperclip, Image, Download } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
+import { useTicketAttachments } from '@/hooks/useTicketAttachments';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
 import { Layout } from '@/components/Layout';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -31,14 +33,28 @@ import {
 import { TicketStatus } from '@/types/ticket';
 import { toast } from 'sonner';
 
+const formatFileSize = (bytes: number | null) => {
+  if (!bytes) return '';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
+
 const TicketDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { getTicketById, updateTicket, deleteTicket } = useTickets();
   const { getUserById } = useUsers();
+  const { attachments, fetchAttachments } = useTicketAttachments();
 
   const ticket = id ? getTicketById(id) : null;
   const user = ticket ? getUserById(ticket.requesterId) : null;
+
+  useEffect(() => {
+    if (id) {
+      fetchAttachments(id);
+    }
+  }, [id, fetchAttachments]);
 
   if (!ticket) {
     return (
@@ -143,6 +159,53 @@ const TicketDetail = () => {
                 <MarkdownRenderer content={ticket.description} />
               </div>
             </div>
+
+            {/* Attachments */}
+            {attachments.length > 0 && (
+              <div className="pt-4 border-t">
+                <div className="flex items-center gap-2 mb-3">
+                  <Paperclip className="w-4 h-4 text-muted-foreground" />
+                  <h3 className="font-medium text-foreground">
+                    Attachments ({attachments.length})
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {attachments.map((attachment) => {
+                    const isImage = attachment.fileType?.startsWith('image/');
+                    return (
+                      <a
+                        key={attachment.id}
+                        href={attachment.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg hover:bg-muted transition-colors group"
+                      >
+                        {isImage ? (
+                          <img
+                            src={attachment.url}
+                            alt={attachment.fileName}
+                            className="w-12 h-12 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 flex items-center justify-center bg-muted rounded">
+                            <FileText className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate group-hover:underline">
+                            {attachment.fileName}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {formatFileSize(attachment.fileSize)}
+                          </p>
+                        </div>
+                        <Download className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             {/* Meta Info */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t">
