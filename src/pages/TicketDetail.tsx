@@ -1,11 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
-import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText, Lightbulb, Paperclip, Image, Download } from 'lucide-react';
+import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText, Lightbulb, Paperclip, Download } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
 import { useTicketAttachments } from '@/hooks/useTicketAttachments';
+import { useTicketChecklists } from '@/hooks/useTicketChecklists';
 import { MarkdownRenderer } from '@/components/MarkdownRenderer';
+import { TicketChecklist } from '@/components/TicketChecklist';
 import { Layout } from '@/components/Layout';
 import { StatusBadge } from '@/components/StatusBadge';
 import { PriorityBadge } from '@/components/PriorityBadge';
@@ -46,6 +48,7 @@ const TicketDetail = () => {
   const { getTicketById, updateTicket, deleteTicket } = useTickets();
   const { getUserById } = useUsers();
   const { attachments, fetchAttachments } = useTicketAttachments();
+  const { items: checklistItems, fetchChecklists, updateChecklistItem } = useTicketChecklists();
 
   const ticket = id ? getTicketById(id) : null;
   const user = ticket ? getUserById(ticket.requesterId) : null;
@@ -53,8 +56,9 @@ const TicketDetail = () => {
   useEffect(() => {
     if (id) {
       fetchAttachments(id);
+      fetchChecklists(id);
     }
-  }, [id, fetchAttachments]);
+  }, [id, fetchAttachments, fetchChecklists]);
 
   if (!ticket) {
     return (
@@ -159,6 +163,19 @@ const TicketDetail = () => {
                 <MarkdownRenderer content={ticket.description} />
               </div>
             </div>
+
+            {/* Checklist */}
+            {checklistItems.length > 0 && (
+              <div className="pt-4 border-t">
+                <div className="border rounded-lg p-4">
+                  <TicketChecklist
+                    items={checklistItems}
+                    onToggle={(id, completed) => updateChecklistItem(id, { completed })}
+                    readOnly={false}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Attachments */}
             {attachments.length > 0 && (

@@ -31,6 +31,8 @@ export const useTickets = () => {
       updatedAt: new Date(t.updated_at),
       resolvedAt: t.resolved_at ? new Date(t.resolved_at) : undefined,
       closedAt: t.closed_at ? new Date(t.closed_at) : undefined,
+      notes: t.notes || undefined,
+      solution: t.solution || undefined,
     }));
 
     setTickets(mapped);
@@ -51,6 +53,8 @@ export const useTickets = () => {
         priority: ticket.priority,
         category_id: ticket.category || null,
         requester_id: ticket.requesterId || null,
+        notes: ticket.notes || null,
+        solution: ticket.solution || null,
       })
       .select()
       .single();
@@ -70,6 +74,8 @@ export const useTickets = () => {
       requesterId: data.requester_id || '',
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
+      notes: data.notes || undefined,
+      solution: data.solution || undefined,
     };
 
     setTickets((prev) => [newTicket, ...prev]);
@@ -85,6 +91,8 @@ export const useTickets = () => {
     if (updates.priority !== undefined) updateData.priority = updates.priority;
     if (updates.category !== undefined) updateData.category_id = updates.category || null;
     if (updates.requesterId !== undefined) updateData.requester_id = updates.requesterId || null;
+    if (updates.notes !== undefined) updateData.notes = updates.notes || null;
+    if (updates.solution !== undefined) updateData.solution = updates.solution || null;
     
     if (updates.status === 'resolved') {
       updateData.resolved_at = new Date().toISOString();
