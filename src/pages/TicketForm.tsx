@@ -188,7 +188,9 @@ const TicketForm = () => {
                     </SelectTrigger>
                     <SelectContent>
                       {users.length === 0 ? (
-                        <SelectItem value="" disabled>No users available</SelectItem>
+                        <div className="py-2 px-2 text-sm text-muted-foreground">
+                          No users available
+                        </div>
                       ) : (
                         users.map(user => (
                           <SelectItem key={user.id} value={user.id}>
