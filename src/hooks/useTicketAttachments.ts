@@ -1,5 +1,7 @@
 import { useState, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { fileUploadSchema, getValidationError } from '@/lib/validations';
+import { toast } from 'sonner';
 
 export interface TicketAttachment {
   id: string;
@@ -55,6 +57,14 @@ export const useTicketAttachments = (ticketId?: string) => {
   }, []);
 
   const uploadAttachment = useCallback(async (ticketId: string, file: File) => {
+    // Validate file before upload
+    const validation = fileUploadSchema.safeParse({ file });
+    if (!validation.success) {
+      const errorMsg = getValidationError(validation.error);
+      toast.error(errorMsg || 'Invalid file');
+      return null;
+    }
+
     setIsUploading(true);
     
     const fileExt = file.name.split('.').pop();
