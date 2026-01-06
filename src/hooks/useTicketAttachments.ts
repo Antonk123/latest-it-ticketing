@@ -31,10 +31,11 @@ export const useTicketAttachments = (ticketId?: string) => {
       return;
     }
 
-    const mapped: TicketAttachment[] = (data || []).map((a) => {
-      const { data: urlData } = supabase.storage
+    // Generate signed URLs for each attachment (1 hour expiry)
+    const mappedPromises = (data || []).map(async (a) => {
+      const { data: urlData, error: urlError } = await supabase.storage
         .from('ticket-attachments')
-        .getPublicUrl(a.file_path);
+        .createSignedUrl(a.file_path, 3600);
 
       return {
         id: a.id,
@@ -44,10 +45,11 @@ export const useTicketAttachments = (ticketId?: string) => {
         fileSize: a.file_size,
         fileType: a.file_type,
         createdAt: new Date(a.created_at),
-        url: urlData.publicUrl,
+        url: urlError ? '' : (urlData?.signedUrl || ''),
       };
     });
 
+    const mapped = await Promise.all(mappedPromises);
     setAttachments(mapped);
     setIsLoading(false);
   }, []);
@@ -86,9 +88,10 @@ export const useTicketAttachments = (ticketId?: string) => {
       return null;
     }
 
-    const { data: urlData } = supabase.storage
+    // Generate signed URL for the newly uploaded attachment (1 hour expiry)
+    const { data: urlData, error: urlError } = await supabase.storage
       .from('ticket-attachments')
-      .getPublicUrl(fileName);
+      .createSignedUrl(fileName, 3600);
 
     const newAttachment: TicketAttachment = {
       id: insertData.id,
@@ -98,7 +101,7 @@ export const useTicketAttachments = (ticketId?: string) => {
       fileSize: insertData.file_size,
       fileType: insertData.file_type,
       createdAt: new Date(insertData.created_at),
-      url: urlData.publicUrl,
+      url: urlError ? '' : (urlData?.signedUrl || ''),
     };
 
     setAttachments((prev) => [...prev, newAttachment]);
