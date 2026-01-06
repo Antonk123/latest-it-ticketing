@@ -16,7 +16,7 @@ export const useCategories = () => {
       .order('created_at', { ascending: true });
 
     if (error) {
-      console.error('Error fetching categories:', error);
+      if (import.meta.env.DEV) console.error('Error fetching categories:', error);
       setIsLoading(false);
       return;
     }
@@ -53,7 +53,7 @@ export const useCategories = () => {
       .single();
 
     if (error) {
-      console.error('Error adding category:', error);
+      if (import.meta.env.DEV) console.error('Error adding category:', error);
       toast.error('Failed to create category');
       return null;
     }
@@ -85,7 +85,7 @@ export const useCategories = () => {
       .eq('id', id);
 
     if (error) {
-      console.error('Error updating category:', error);
+      if (import.meta.env.DEV) console.error('Error updating category:', error);
       toast.error('Failed to update category');
       return;
     }
@@ -99,7 +99,7 @@ export const useCategories = () => {
     const { error } = await supabase.from('categories').delete().eq('id', id);
 
     if (error) {
-      console.error('Error deleting category:', error);
+      if (import.meta.env.DEV) console.error('Error deleting category:', error);
       return;
     }
 

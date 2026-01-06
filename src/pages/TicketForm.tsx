@@ -158,7 +158,7 @@ const TicketForm = () => {
       
       navigate('/tickets');
     } catch (error) {
-      console.error('Error submitting ticket:', error);
+      if (import.meta.env.DEV) console.error('Error submitting ticket:', error);
       toast.error('Failed to save ticket');
     } finally {
       setIsSubmitting(false);

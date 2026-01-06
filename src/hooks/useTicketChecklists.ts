@@ -29,7 +29,7 @@ export const useTicketChecklists = (ticketId?: string) => {
       .order('position', { ascending: true });
 
     if (error) {
-      console.error('Error fetching checklists:', error);
+      if (import.meta.env.DEV) console.error('Error fetching checklists:', error);
       setIsLoading(false);
       return;
     }
@@ -62,7 +62,7 @@ export const useTicketChecklists = (ticketId?: string) => {
       .single();
 
     if (error) {
-      console.error('Error adding checklist item:', error);
+      if (import.meta.env.DEV) console.error('Error adding checklist item:', error);
       toast.error('Failed to add checklist item');
       return null;
     }
@@ -78,7 +78,7 @@ export const useTicketChecklists = (ticketId?: string) => {
       .eq('id', id);
 
     if (error) {
-      console.error('Error updating checklist item:', error);
+      if (import.meta.env.DEV) console.error('Error updating checklist item:', error);
       return;
     }
 
@@ -96,7 +96,7 @@ export const useTicketChecklists = (ticketId?: string) => {
       .eq('id', id);
 
     if (error) {
-      console.error('Error deleting checklist item:', error);
+      if (import.meta.env.DEV) console.error('Error deleting checklist item:', error);
       return;
     }
 
@@ -130,7 +130,7 @@ export const useTicketChecklists = (ticketId?: string) => {
       .select();
 
     if (error) {
-      console.error('Error bulk adding checklist items:', error);
+      if (import.meta.env.DEV) console.error('Error bulk adding checklist items:', error);
       toast.error('Failed to add checklist items');
       return [];
     }

@@ -16,7 +16,7 @@ export const useTickets = () => {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching tickets:', error);
+      if (import.meta.env.DEV) console.error('Error fetching tickets:', error);
       setIsLoading(false);
       return;
     }
@@ -70,7 +70,7 @@ export const useTickets = () => {
       .single();
 
     if (error) {
-      console.error('Error adding ticket:', error);
+      if (import.meta.env.DEV) console.error('Error adding ticket:', error);
       toast.error('Failed to create ticket');
       return null;
     }
@@ -127,7 +127,7 @@ export const useTickets = () => {
       .eq('id', id);
 
     if (error) {
-      console.error('Error updating ticket:', error);
+      if (import.meta.env.DEV) console.error('Error updating ticket:', error);
       toast.error('Failed to update ticket');
       return;
     }
@@ -153,7 +153,7 @@ export const useTickets = () => {
     const { error } = await supabase.from('tickets').delete().eq('id', id);
 
     if (error) {
-      console.error('Error deleting ticket:', error);
+      if (import.meta.env.DEV) console.error('Error deleting ticket:', error);
       return;
     }
 

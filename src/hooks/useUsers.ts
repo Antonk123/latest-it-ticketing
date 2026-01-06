@@ -16,7 +16,7 @@ export const useUsers = () => {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching users:', error);
+      if (import.meta.env.DEV) console.error('Error fetching users:', error);
       setIsLoading(false);
       return;
     }
@@ -57,7 +57,7 @@ export const useUsers = () => {
       .single();
 
     if (error) {
-      console.error('Error adding user:', error);
+      if (import.meta.env.DEV) console.error('Error adding user:', error);
       toast.error('Failed to create contact');
       return null;
     }
@@ -96,7 +96,7 @@ export const useUsers = () => {
       .eq('id', id);
 
     if (error) {
-      console.error('Error updating user:', error);
+      if (import.meta.env.DEV) console.error('Error updating user:', error);
       toast.error('Failed to update contact');
       return;
     }
@@ -110,7 +110,7 @@ export const useUsers = () => {
     const { error } = await supabase.from('contacts').delete().eq('id', id);
 
     if (error) {
-      console.error('Error deleting user:', error);
+      if (import.meta.env.DEV) console.error('Error deleting user:', error);
       return;
     }
 

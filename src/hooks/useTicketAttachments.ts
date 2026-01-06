@@ -28,7 +28,7 @@ export const useTicketAttachments = (ticketId?: string) => {
       .order('created_at', { ascending: true });
 
     if (error) {
-      console.error('Error fetching attachments:', error);
+      if (import.meta.env.DEV) console.error('Error fetching attachments:', error);
       setIsLoading(false);
       return;
     }
@@ -75,7 +75,7 @@ export const useTicketAttachments = (ticketId?: string) => {
       .upload(fileName, file);
 
     if (uploadError) {
-      console.error('Error uploading file:', uploadError);
+      if (import.meta.env.DEV) console.error('Error uploading file:', uploadError);
       setIsUploading(false);
       return null;
     }
@@ -93,7 +93,7 @@ export const useTicketAttachments = (ticketId?: string) => {
       .single();
 
     if (insertError) {
-      console.error('Error saving attachment record:', insertError);
+      if (import.meta.env.DEV) console.error('Error saving attachment record:', insertError);
       setIsUploading(false);
       return null;
     }
@@ -126,7 +126,7 @@ export const useTicketAttachments = (ticketId?: string) => {
       .remove([attachment.filePath]);
 
     if (storageError) {
-      console.error('Error deleting file from storage:', storageError);
+      if (import.meta.env.DEV) console.error('Error deleting file from storage:', storageError);
     }
 
     // Delete from database
@@ -136,7 +136,7 @@ export const useTicketAttachments = (ticketId?: string) => {
       .eq('id', attachment.id);
 
     if (dbError) {
-      console.error('Error deleting attachment record:', dbError);
+      if (import.meta.env.DEV) console.error('Error deleting attachment record:', dbError);
       return false;
     }
 
