@@ -111,7 +111,7 @@ export const FileUpload = ({
           )}
         </Button>
         <p className="text-xs text-muted-foreground mt-2">
-          Max 20MB per file • Images, PDFs, Documents
+          Max 10MB per file • Images, PDFs, Documents
         </p>
       </div>
 
