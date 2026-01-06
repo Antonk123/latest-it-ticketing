@@ -17,9 +17,17 @@ import NotFound from "./pages/NotFound";
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, hasPassword } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   
-  if (!hasPassword || !isAuthenticated) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
   
@@ -27,9 +35,17 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 };
 
 const PublicRoute = ({ children }: { children: React.ReactNode }) => {
-  const { isAuthenticated, hasPassword } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   
-  if (hasPassword && isAuthenticated) {
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+  
+  if (isAuthenticated) {
     return <Navigate to="/" replace />;
   }
   

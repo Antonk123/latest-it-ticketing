@@ -14,7 +14,111 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      categories: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      contacts: {
+        Row: {
+          company: string | null
+          created_at: string
+          email: string
+          id: string
+          name: string
+          phone: string | null
+        }
+        Insert: {
+          company?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          name: string
+          phone?: string | null
+        }
+        Update: {
+          company?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          name?: string
+          phone?: string | null
+        }
+        Relationships: []
+      }
+      tickets: {
+        Row: {
+          category_id: string | null
+          closed_at: string | null
+          created_at: string
+          description: string
+          id: string
+          priority: string
+          requester_id: string | null
+          resolved_at: string | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          priority?: string
+          requester_id?: string | null
+          resolved_at?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category_id?: string | null
+          closed_at?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          priority?: string
+          requester_id?: string | null
+          resolved_at?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tickets_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tickets_requester_id_fkey"
+            columns: ["requester_id"]
+            isOneToOne: false
+            referencedRelation: "contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
