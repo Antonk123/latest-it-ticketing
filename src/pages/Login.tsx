@@ -1,22 +1,22 @@
-import { useState } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Lock, Mail, UserPlus, LogIn, ArrowLeft, KeyRound, Ticket } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Lock, Mail, UserPlus, LogIn, ArrowLeft, KeyRound, Ticket } from "lucide-react";
+import { toast } from "sonner";
 
 const Login = () => {
   const [searchParams] = useSearchParams();
-  const initialTab = searchParams.get('tab') || 'signin';
-  
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const initialTab = searchParams.get("tab") || "signin";
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmailSent, setResetEmailSent] = useState(false);
@@ -26,62 +26,62 @@ const Login = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     const { error } = await signIn(email, password);
-    
+
     if (error) {
       toast.error(error);
     } else {
-      toast.success('Signed in successfully');
-      navigate('/');
+      toast.success("Signed in successfully");
+      navigate("/");
     }
     setIsLoading(false);
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error("Password must be at least 6 characters");
       return;
     }
-    
+
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error("Passwords do not match");
       return;
     }
-    
+
     setIsLoading(true);
     const { error } = await signUp(email, password);
-    
+
     if (error) {
       toast.error(error);
     } else {
-      toast.success('Account created successfully');
-      navigate('/');
+      toast.success("Account created successfully");
+      navigate("/");
     }
     setIsLoading(false);
   };
 
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!email) {
-      toast.error('Please enter your email address');
+      toast.error("Please enter your email address");
       return;
     }
-    
+
     setIsLoading(true);
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     });
-    
+
     if (error) {
       toast.error(error.message);
     } else {
       setResetEmailSent(true);
-      toast.success('Password reset email sent');
+      toast.success("Password reset email sent");
     }
     setIsLoading(false);
   };
@@ -96,20 +96,20 @@ const Login = () => {
             </div>
             <CardTitle>Reset Password</CardTitle>
             <CardDescription>
-              {resetEmailSent 
-                ? 'Check your email for a password reset link'
-                : 'Enter your email to receive a password reset link'}
+              {resetEmailSent
+                ? "Check your email for a password reset link"
+                : "Enter your email to receive a password reset link"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {resetEmailSent ? (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  We've sent a password reset link to <strong>{email}</strong>. 
-                  Click the link in the email to reset your password.
+                  We've sent a password reset link to <strong>{email}</strong>. Click the link in the email to reset
+                  your password.
                 </p>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="w-full gap-2"
                   onClick={() => {
                     setShowForgotPassword(false);
@@ -138,11 +138,11 @@ const Login = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Sending...' : 'Send Reset Link'}
+                  {isLoading ? "Sending..." : "Send Reset Link"}
                 </Button>
-                <Button 
+                <Button
                   type="button"
-                  variant="ghost" 
+                  variant="ghost"
                   className="w-full gap-2"
                   onClick={() => setShowForgotPassword(false)}
                 >
@@ -165,9 +165,7 @@ const Login = () => {
             <Lock className="w-6 h-6 text-primary" />
           </div>
           <CardTitle>IT Ticket System</CardTitle>
-          <CardDescription>
-            Sign in or create an account to access the ticket system
-          </CardDescription>
+          <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue={initialTab} className="w-full">
@@ -181,7 +179,7 @@ const Login = () => {
                 Sign Up
               </TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4 pt-4">
                 <div className="space-y-2">
@@ -224,14 +222,12 @@ const Login = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Signing in...' : 'Sign In'}
+                  {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
                 <div className="mt-4 pt-4 border-t text-center">
-                  <p className="text-sm text-muted-foreground mb-2">
-                    Behöver du hjälp?
-                  </p>
-                  <Link 
-                    to="/submit-ticket" 
+                  <p className="text-sm text-muted-foreground mb-2">Behöver du hjälp?</p>
+                  <Link
+                    to="/submit-ticket"
                     className="inline-flex items-center gap-2 text-primary hover:underline text-sm"
                   >
                     <Ticket className="w-4 h-4" />
@@ -240,7 +236,7 @@ const Login = () => {
                 </div>
               </form>
             </TabsContent>
-            
+
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4 pt-4">
                 <div className="space-y-2">
@@ -289,7 +285,7 @@ const Login = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? 'Creating account...' : 'Create Account'}
+                  {isLoading ? "Creating account..." : "Create Account"}
                 </Button>
               </form>
             </TabsContent>
