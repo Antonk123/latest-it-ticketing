@@ -23,11 +23,17 @@ const STATUS_COLORS: Record<string, string> = {
   closed: 'hsl(var(--chart-4))',
 };
 
+const MONTH_NAMES = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];
+
 const Reports = () => {
   const { tickets } = useTickets();
   const { users } = useUsers();
   const [selectedUserId, setSelectedUserId] = useState<string>('all');
   const [selectedYear, setSelectedYear] = useState<string>('all');
+  const [selectedMonth, setSelectedMonth] = useState<string>('all');
 
   // Get available years from tickets
   const availableYears = useMemo(() => {
@@ -42,15 +48,28 @@ const Reports = () => {
     return Array.from(years).sort((a, b) => b - a);
   }, [tickets]);
 
-  // Filter tickets by year
-  const yearFilteredTickets = useMemo(() => {
-    if (selectedYear === 'all') return tickets;
-    const year = parseInt(selectedYear);
-    return tickets.filter((ticket) => {
-      const createdYear = new Date(ticket.createdAt).getFullYear();
-      return createdYear === year;
-    });
-  }, [tickets, selectedYear]);
+  // Filter tickets by year and month
+  const yearMonthFilteredTickets = useMemo(() => {
+    let filtered = tickets;
+    
+    if (selectedYear !== 'all') {
+      const year = parseInt(selectedYear);
+      filtered = filtered.filter((ticket) => {
+        const createdYear = new Date(ticket.createdAt).getFullYear();
+        return createdYear === year;
+      });
+    }
+    
+    if (selectedMonth !== 'all') {
+      const month = parseInt(selectedMonth);
+      filtered = filtered.filter((ticket) => {
+        const createdMonth = new Date(ticket.createdAt).getMonth();
+        return createdMonth === month;
+      });
+    }
+    
+    return filtered;
+  }, [tickets, selectedYear, selectedMonth]);
 
   // Tickets closed by year (for overview chart)
   const ticketsClosedByYear = useMemo(() => {
@@ -67,11 +86,33 @@ const Reports = () => {
       .sort((a, b) => parseInt(a.year) - parseInt(b.year));
   }, [tickets]);
 
-  // Tickets by requester (user) - filtered by year
+  // Tickets by month (for selected year)
+  const ticketsByMonth = useMemo(() => {
+    if (selectedYear === 'all') return [];
+    
+    const year = parseInt(selectedYear);
+    const monthCounts = new Array(12).fill(0);
+    
+    tickets.forEach((ticket) => {
+      const date = new Date(ticket.createdAt);
+      if (date.getFullYear() === year) {
+        monthCounts[date.getMonth()]++;
+      }
+    });
+    
+    return monthCounts.map((count, index) => ({
+      month: MONTH_NAMES[index].substring(0, 3),
+      fullMonth: MONTH_NAMES[index],
+      monthIndex: index,
+      count,
+    }));
+  }, [tickets, selectedYear]);
+
+  // Tickets by requester (user) - filtered by year and month
   const ticketsByUser = useMemo(() => {
     const counts: Record<string, { name: string; count: number; userId: string }> = {};
     
-    yearFilteredTickets.forEach(ticket => {
+    yearMonthFilteredTickets.forEach(ticket => {
       const user = users.find(u => u.id === ticket.requesterId);
       const userName = user?.name || 'Unassigned';
       const userId = ticket.requesterId || 'unassigned';
@@ -83,9 +124,9 @@ const Reports = () => {
     });
     
     return Object.values(counts).sort((a, b) => b.count - a.count);
-  }, [yearFilteredTickets, users]);
+  }, [yearMonthFilteredTickets, users]);
 
-  // Tickets by status - filtered by year
+  // Tickets by status - filtered by year and month
   const ticketsByStatus = useMemo(() => {
     const counts: Record<string, number> = {
       open: 0,
@@ -94,7 +135,7 @@ const Reports = () => {
       closed: 0,
     };
     
-    yearFilteredTickets.forEach(ticket => {
+    yearMonthFilteredTickets.forEach(ticket => {
       counts[ticket.status] = (counts[ticket.status] || 0) + 1;
     });
     
@@ -103,9 +144,9 @@ const Reports = () => {
       value: count,
       status,
     }));
-  }, [yearFilteredTickets]);
+  }, [yearMonthFilteredTickets]);
 
-  // Tickets by priority - filtered by year
+  // Tickets by priority - filtered by year and month
   const ticketsByPriority = useMemo(() => {
     const counts: Record<string, number> = {
       low: 0,
@@ -114,7 +155,7 @@ const Reports = () => {
       critical: 0,
     };
     
-    yearFilteredTickets.forEach(ticket => {
+    yearMonthFilteredTickets.forEach(ticket => {
       counts[ticket.priority] = (counts[ticket.priority] || 0) + 1;
     });
     
@@ -122,18 +163,18 @@ const Reports = () => {
       name: priority.charAt(0).toUpperCase() + priority.slice(1),
       value: count,
     }));
-  }, [yearFilteredTickets]);
+  }, [yearMonthFilteredTickets]);
 
   // Filtered tickets by selected user
   const filteredTickets = useMemo(() => {
     if (selectedUserId === 'all') {
-      return yearFilteredTickets;
+      return yearMonthFilteredTickets;
     }
     if (selectedUserId === 'unassigned') {
-      return yearFilteredTickets.filter(t => !t.requesterId);
+      return yearMonthFilteredTickets.filter(t => !t.requesterId);
     }
-    return yearFilteredTickets.filter(t => t.requesterId === selectedUserId);
-  }, [yearFilteredTickets, selectedUserId]);
+    return yearMonthFilteredTickets.filter(t => t.requesterId === selectedUserId);
+  }, [yearMonthFilteredTickets, selectedUserId]);
 
   const selectedUserName = useMemo(() => {
     if (selectedUserId === 'all') return 'All Users';
@@ -149,9 +190,12 @@ const Reports = () => {
             <h1 className="text-2xl font-bold text-foreground">Reports</h1>
             <p className="text-muted-foreground mt-1">Ticket analytics and insights</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
-            <Select value={selectedYear} onValueChange={setSelectedYear}>
+            <Select value={selectedYear} onValueChange={(value) => {
+              setSelectedYear(value);
+              if (value === 'all') setSelectedMonth('all');
+            }}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Select year" />
               </SelectTrigger>
@@ -164,6 +208,21 @@ const Reports = () => {
                 ))}
               </SelectContent>
             </Select>
+            {selectedYear !== 'all' && (
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Select month" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Months</SelectItem>
+                  {MONTH_NAMES.map((month, index) => (
+                    <SelectItem key={index} value={index.toString()}>
+                      {month}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
           </div>
         </div>
 
@@ -198,7 +257,46 @@ const Reports = () => {
           </CardContent>
         </Card>
 
-        {/* Charts Row */}
+        {/* Tickets by Month (when year is selected) */}
+        {selectedYear !== 'all' && (
+          <Card>
+            <CardHeader className="flex flex-row items-center gap-2">
+              <Calendar className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">Tickets Created by Month ({selectedYear})</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {ticketsByMonth.every(m => m.count === 0) ? (
+                <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                  No tickets in {selectedYear}
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={ticketsByMonth} margin={{ left: 20, right: 20 }}>
+                    <XAxis dataKey="month" />
+                    <YAxis allowDecimals={false} />
+                    <Tooltip 
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--card))',
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                      }}
+                      cursor={{ fill: 'hsl(var(--muted))' }}
+                      formatter={(value, name, props) => [value, props.payload.fullMonth]}
+                    />
+                    <Bar 
+                      dataKey="count" 
+                      fill="hsl(var(--primary))" 
+                      radius={[4, 4, 0, 0]}
+                      onClick={(data) => setSelectedMonth(data.monthIndex.toString())}
+                      className="cursor-pointer"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Tickets by User Chart */}
           <Card>
@@ -249,7 +347,7 @@ const Reports = () => {
               <CardTitle className="text-lg">Tickets by Status</CardTitle>
             </CardHeader>
             <CardContent>
-              {yearFilteredTickets.length === 0 ? (
+              {yearMonthFilteredTickets.length === 0 ? (
                 <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                   No ticket data available
                 </div>
@@ -296,7 +394,7 @@ const Reports = () => {
             <CardTitle className="text-lg">Tickets by Priority</CardTitle>
           </CardHeader>
           <CardContent>
-            {yearFilteredTickets.length === 0 ? (
+            {yearMonthFilteredTickets.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground">
                 No ticket data available
               </div>
