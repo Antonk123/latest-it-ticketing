@@ -12,6 +12,24 @@ dist
 dist-ssr
 *.local
 
+# Environment files
+.env
+.env.local
+.env.production
+*.env.backup
+
+# Docker
+docker-compose.override.yml
+docker-compose.local.yml
+
+# Backups
+*-backup-*
+*.tar.gz
+*.sql
+
+# Deployment
+DEPLOYMENT_INFO.txt
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

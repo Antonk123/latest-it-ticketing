@@ -1,0 +1,56 @@
+# Backend Dockerfile
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Create package.json for the backend server
+RUN cat > package.json << 'EOF'
+{
+  "name": "it-ticketing-backend",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1"
+  }
+}
+EOF
+
+# Install dependencies
+RUN npm install
+
+# Create the server file
+RUN cat > server.js << 'EOF'
+const express = require('express');
+const cors = require('cors');
+require('dotenv').config();
+
+const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(cors());
+app.use(express.json());
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+// Proxy endpoint for Supabase if needed
+app.all('/api/*', (req, res) => {
+  res.json({
+    message: 'API endpoint',
+    path: req.path,
+    method: req.method
+  });
+});
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Backend server running on port ${PORT}`);
+});
+EOF
+
+EXPOSE 3001
+
+CMD ["node", "server.js"]
