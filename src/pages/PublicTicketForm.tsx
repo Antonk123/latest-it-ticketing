@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react';
-import { CheckCircle, Send, AlertCircle, X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import { useState, useEffect } from "react";
+import { CheckCircle, Send, AlertCircle, X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 interface Category {
   id: string;
@@ -21,19 +21,19 @@ const PublicTicketForm = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
-  
+
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    title: '',
-    description: '',
-    category: '',
-    priority: 'medium',
+    name: "",
+    email: "",
+    title: "",
+    description: "",
+    category: "",
+    priority: "medium",
   });
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const { data } = await supabase.from('categories').select('id, label');
+      const { data } = await supabase.from("categories").select("id, label");
       if (data) setCategories(data);
     };
     fetchCategories();
@@ -45,7 +45,7 @@ const PublicTicketForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('submit-public-ticket', {
+      const { data, error: fnError } = await supabase.functions.invoke("submit-public-ticket", {
         body: {
           name: formData.name,
           email: formData.email,
@@ -57,7 +57,7 @@ const PublicTicketForm = () => {
       });
 
       if (fnError) {
-        throw new Error(fnError.message || 'Kunde inte skicka ärendet');
+        throw new Error(fnError.message || "Kunde inte skicka ärendet");
       }
 
       if (data?.error) {
@@ -66,7 +66,7 @@ const PublicTicketForm = () => {
 
       setIsSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Ett oväntat fel uppstod');
+      setError(err instanceof Error ? err.message : "Ett oväntat fel uppstod");
     } finally {
       setIsSubmitting(false);
     }
@@ -74,12 +74,12 @@ const PublicTicketForm = () => {
 
   const handleReset = () => {
     setFormData({
-      name: '',
-      email: '',
-      title: '',
-      description: '',
-      category: '',
-      priority: 'medium',
+      name: "",
+      email: "",
+      title: "",
+      description: "",
+      category: "",
+      priority: "medium",
     });
     setIsSuccess(false);
     setError(null);
@@ -107,19 +107,12 @@ const PublicTicketForm = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-lg relative">
-        <Button
-          variant="ghost"
-          size="icon"
-          className="absolute right-2 top-2"
-          onClick={() => navigate('/')}
-        >
+        <Button variant="ghost" size="icon" className="absolute right-2 top-2" onClick={() => navigate("/")}>
           <X className="h-4 w-4" />
         </Button>
         <CardHeader>
           <CardTitle>Skicka en supportförfrågan</CardTitle>
-          <CardDescription>
-            Fyll i formuläret nedan så återkommer vi så snart som möjligt.
-          </CardDescription>
+          <CardDescription>Fyll i formuläret nedan så återkommer vi så snart som möjligt.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -150,7 +143,7 @@ const PublicTicketForm = () => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="johan@exempel.se"
+                  placeholder="namn@prefabmastarna.se"
                   required
                   maxLength={255}
                 />
