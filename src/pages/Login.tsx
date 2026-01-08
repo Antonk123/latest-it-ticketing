@@ -129,7 +129,7 @@ const Login = () => {
                     <Input
                       id="reset-email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="förnamn.efternamn@prefabmastarna.se"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -165,18 +165,18 @@ const Login = () => {
             <Lock className="w-6 h-6 text-primary" />
           </div>
           <CardTitle>IT Ticket System</CardTitle>
-          <CardDescription></CardDescription>
+          <CardDescription>Sign in or create an account to access the ticket system</CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue={initialTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin" className="gap-2">
                 <LogIn className="w-4 h-4" />
-                Logga in
+                Sign In
               </TabsTrigger>
               <TabsTrigger value="signup" className="gap-2">
                 <UserPlus className="w-4 h-4" />
-                Skapa konto
+                Sign Up
               </TabsTrigger>
             </TabsList>
 
@@ -189,7 +189,7 @@ const Login = () => {
                     <Input
                       id="signin-email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="förnamn.efternamn@prefabmastarna.se"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -199,13 +199,13 @@ const Login = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="signin-password">Lösenord</Label>
+                    <Label htmlFor="signin-password">Password</Label>
                     <button
                       type="button"
                       className="text-xs text-primary hover:underline"
                       onClick={() => setShowForgotPassword(true)}
                     >
-                      Glömt lösenord?
+                      Forgot password?
                     </button>
                   </div>
                   <div className="relative">
@@ -246,7 +246,7 @@ const Login = () => {
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="förnamn.efternamn@prefabmastarna.se"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -255,7 +255,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Lösenord</Label>
+                  <Label htmlFor="signup-password">Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -270,7 +270,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-confirm">Bekräfta lösenord</Label>
+                  <Label htmlFor="signup-confirm">Confirm Password</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
