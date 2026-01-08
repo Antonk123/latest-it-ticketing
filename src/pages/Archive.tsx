@@ -26,9 +26,9 @@ const Archive = () => {
     <Layout>
       <div className="space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Archive</h1>
+          <h1 className="text-2xl font-bold text-foreground">Arkiv</h1>
           <p className="text-muted-foreground mt-1">
-            {closedTickets.length} closed ticket{closedTickets.length !== 1 ? 's' : ''}
+            {closedTickets.length} stängt ärende{closedTickets.length !== 1 ? 'n' : ''}
           </p>
         </div>
 
@@ -36,16 +36,16 @@ const Archive = () => {
           <SearchBar
             value={search}
             onChange={setSearch}
-            placeholder="Search archived tickets..."
+            placeholder="Sök arkiverade ärenden..."
           />
         </div>
 
         {closedTickets.length === 0 && search === '' ? (
           <div className="text-center py-16 border rounded-lg bg-card">
             <ArchiveIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No archived tickets yet</p>
+            <p className="text-muted-foreground">Inga arkiverade ärenden ännu</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Closed tickets will appear here
+              Stängda ärenden visas här
             </p>
           </div>
         ) : (

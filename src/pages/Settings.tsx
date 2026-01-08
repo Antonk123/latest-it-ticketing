@@ -15,12 +15,12 @@ const Settings = () => {
 
   const handleAddCategory = () => {
     if (!newCategoryName.trim()) {
-      toast.error('Please enter a category name');
+      toast.error('Ange ett kategorinamn');
       return;
     }
     addCategory(newCategoryName.trim());
     setNewCategoryName('');
-    toast.success('Category added');
+    toast.success('Kategori tillagd');
   };
 
   const handleStartEdit = (id: string, label: string) => {
@@ -30,14 +30,14 @@ const Settings = () => {
 
   const handleSaveEdit = () => {
     if (!editingName.trim()) {
-      toast.error('Category name cannot be empty');
+      toast.error('Kategorinamnet kan inte vara tomt');
       return;
     }
     if (editingId) {
       updateCategory(editingId, editingName.trim());
       setEditingId(null);
       setEditingName('');
-      toast.success('Category updated');
+      toast.success('Kategori uppdaterad');
     }
   };
 
@@ -48,36 +48,36 @@ const Settings = () => {
 
   const handleDelete = (id: string) => {
     deleteCategory(id);
-    toast.success('Category deleted');
+    toast.success('Kategori borttagen');
   };
 
   return (
     <Layout>
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-bold mb-6">Settings</h1>
+        <h1 className="text-2xl font-bold mb-6">Inställningar</h1>
 
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Tag className="w-5 h-5" />
-              Categories
+              Kategorier
             </CardTitle>
             <CardDescription>
-              Manage ticket categories. Changes will apply to new tickets.
+              Hantera ärendekategorier. Ändringar gäller för nya ärenden.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             {/* Add new category */}
             <div className="flex gap-2">
               <Input
-                placeholder="New category name..."
+                placeholder="Nytt kategorinamn..."
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
               />
               <Button onClick={handleAddCategory} className="shrink-0">
                 <Plus className="w-4 h-4 mr-2" />
-                Add
+                Lägg till
               </Button>
             </div>
 
@@ -127,7 +127,7 @@ const Settings = () => {
               ))}
               {categories.length === 0 && (
                 <div className="p-4 text-center text-muted-foreground">
-                  No categories yet. Add one above.
+                  Inga kategorier ännu. Lägg till en ovan.
                 </div>
               )}
             </div>

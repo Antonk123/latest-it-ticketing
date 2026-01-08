@@ -55,7 +55,7 @@ const PublicTicketForm = () => {
       });
 
       if (fnError) {
-        throw new Error(fnError.message || 'Failed to submit ticket');
+        throw new Error(fnError.message || 'Kunde inte skicka ärendet');
       }
 
       if (data?.error) {
@@ -64,7 +64,7 @@ const PublicTicketForm = () => {
 
       setIsSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
+      setError(err instanceof Error ? err.message : 'Ett oväntat fel uppstod');
     } finally {
       setIsSubmitting(false);
     }
@@ -89,12 +89,12 @@ const PublicTicketForm = () => {
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-semibold mb-2">Ticket Submitted!</h2>
+            <h2 className="text-2xl font-semibold mb-2">Ärendet skickat!</h2>
             <p className="text-muted-foreground mb-6">
-              Thank you for contacting us. We've received your request and will get back to you as soon as possible.
+              Tack för att du kontaktar oss. Vi har tagit emot din förfrågan och återkommer så snart som möjligt.
             </p>
             <Button onClick={handleReset} variant="outline">
-              Submit Another Ticket
+              Skicka ett nytt ärende
             </Button>
           </CardContent>
         </Card>
@@ -106,9 +106,9 @@ const PublicTicketForm = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-lg">
         <CardHeader>
-          <CardTitle>Submit a Support Request</CardTitle>
+          <CardTitle>Skicka en supportförfrågan</CardTitle>
           <CardDescription>
-            Fill out the form below and we'll get back to you as soon as possible.
+            Fyll i formuläret nedan så återkommer vi så snart som möjligt.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -122,25 +122,25 @@ const PublicTicketForm = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Your Name *</Label>
+                <Label htmlFor="name">Ditt namn *</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="John Doe"
+                  placeholder="Johan Andersson"
                   required
                   maxLength={100}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Your Email *</Label>
+                <Label htmlFor="email">Din e-post *</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  placeholder="john@example.com"
+                  placeholder="johan@exempel.se"
                   required
                   maxLength={255}
                 />
@@ -148,24 +148,24 @@ const PublicTicketForm = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="title">Issue Title *</Label>
+              <Label htmlFor="title">Ärendets titel *</Label>
               <Input
                 id="title"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                placeholder="Brief summary of your issue"
+                placeholder="Kort sammanfattning av ditt problem"
                 required
                 maxLength={200}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description *</Label>
+              <Label htmlFor="description">Beskrivning *</Label>
               <Textarea
                 id="description"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Please describe your issue in detail..."
+                placeholder="Beskriv ditt problem i detalj..."
                 rows={5}
                 required
                 maxLength={5000}
@@ -175,13 +175,13 @@ const PublicTicketForm = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {categories.length > 0 && (
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">Kategori</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) => setFormData({ ...formData, category: value })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder="Välj kategori" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((cat) => (
@@ -195,7 +195,7 @@ const PublicTicketForm = () => {
               )}
 
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
+                <Label htmlFor="priority">Prioritet</Label>
                 <Select
                   value={formData.priority}
                   onValueChange={(value) => setFormData({ ...formData, priority: value })}
@@ -204,10 +204,10 @@ const PublicTicketForm = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="low">Låg</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="urgent">Urgent</SelectItem>
+                    <SelectItem value="high">Hög</SelectItem>
+                    <SelectItem value="urgent">Brådskande</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -217,12 +217,12 @@ const PublicTicketForm = () => {
               {isSubmitting ? (
                 <>
                   <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-current mr-2" />
-                  Submitting...
+                  Skickar...
                 </>
               ) : (
                 <>
                   <Send className="h-4 w-4 mr-2" />
-                  Submit Ticket
+                  Skicka ärende
                 </>
               )}
             </Button>

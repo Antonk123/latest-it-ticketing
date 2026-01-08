@@ -14,27 +14,27 @@ interface LayoutProps {
 const navItems = [{
   path: '/',
   icon: LayoutDashboard,
-  label: 'Dashboard'
+  label: 'Översikt'
 }, {
   path: '/tickets',
   icon: Ticket,
-  label: 'All Tickets'
+  label: 'Alla ärenden'
 }, {
   path: '/reports',
   icon: BarChart3,
-  label: 'Reports'
+  label: 'Rapporter'
 }, {
   path: '/archive',
   icon: Archive,
-  label: 'Archive'
+  label: 'Arkiv'
 }, {
   path: '/users',
   icon: Users,
-  label: 'Users'
+  label: 'Användare'
 }, {
   path: '/settings',
   icon: Settings,
-  label: 'Settings'
+  label: 'Inställningar'
 }];
 export const Layout = ({
   children
@@ -60,7 +60,7 @@ export const Layout = ({
             <div className="w-8 h-8 rounded-lg bg-sidebar-primary flex items-center justify-center">
               <Ticket className="w-5 h-5 text-sidebar-primary-foreground" />
             </div>
-            <span className="font-semibold text-lg text-primary">IT Tickets</span>
+            <span className="font-semibold text-lg text-primary">IT-ärenden</span>
           </div>
           <button className="lg:hidden text-sidebar-foreground" onClick={() => setSidebarOpen(false)}>
             <X className="w-5 h-5 text-secondary-foreground" />
@@ -81,7 +81,7 @@ export const Layout = ({
           <Link to="/tickets/new" onClick={() => setSidebarOpen(false)}>
             <Button className="w-full gap-2" size="lg">
               <Plus className="w-4 h-4" />
-              New Ticket
+              Nytt ärende
             </Button>
           </Link>
           {user && (
@@ -95,7 +95,7 @@ export const Layout = ({
             onClick={handleLogout}
           >
             <LogOut className="w-4 h-4" />
-            Sign Out
+            Logga ut
           </Button>
         </div>
       </aside>

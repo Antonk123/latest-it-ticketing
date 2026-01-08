@@ -48,12 +48,12 @@ const ResetPassword = () => {
     e.preventDefault();
     
     if (password.length < 6) {
-      toast.error('Password must be at least 6 characters');
+      toast.error('Lösenordet måste vara minst 6 tecken');
       return;
     }
     
     if (password !== confirmPassword) {
-      toast.error('Passwords do not match');
+      toast.error('Lösenorden matchar inte');
       return;
     }
     
@@ -67,7 +67,7 @@ const ResetPassword = () => {
       toast.error(error.message);
     } else {
       setIsSuccess(true);
-      toast.success('Password updated successfully');
+      toast.success('Lösenordet uppdaterades');
     }
     setIsLoading(false);
   };
@@ -88,9 +88,9 @@ const ResetPassword = () => {
             <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
               <KeyRound className="w-6 h-6 text-destructive" />
             </div>
-            <CardTitle>Invalid or Expired Link</CardTitle>
+            <CardTitle>Ogiltig eller utgången länk</CardTitle>
             <CardDescription>
-              This password reset link is invalid or has expired. Please request a new one.
+              Denna återställningslänk är ogiltig eller har utgått. Vänligen begär en ny.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -98,7 +98,7 @@ const ResetPassword = () => {
               className="w-full" 
               onClick={() => navigate('/login')}
             >
-              Back to Login
+              Tillbaka till inloggning
             </Button>
           </CardContent>
         </Card>
@@ -114,9 +114,9 @@ const ResetPassword = () => {
             <div className="mx-auto w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
               <CheckCircle className="w-6 h-6 text-green-500" />
             </div>
-            <CardTitle>Password Updated</CardTitle>
+            <CardTitle>Lösenord uppdaterat</CardTitle>
             <CardDescription>
-              Your password has been successfully updated. You can now sign in with your new password.
+              Ditt lösenord har uppdaterats. Du kan nu logga in med ditt nya lösenord.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -124,7 +124,7 @@ const ResetPassword = () => {
               className="w-full" 
               onClick={() => navigate('/login')}
             >
-              Sign In
+              Logga in
             </Button>
           </CardContent>
         </Card>
@@ -139,15 +139,15 @@ const ResetPassword = () => {
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <KeyRound className="w-6 h-6 text-primary" />
           </div>
-          <CardTitle>Set New Password</CardTitle>
+          <CardTitle>Ange nytt lösenord</CardTitle>
           <CardDescription>
-            Enter your new password below
+            Ange ditt nya lösenord nedan
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleResetPassword} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
+              <Label htmlFor="new-password">Nytt lösenord</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -162,11 +162,11 @@ const ResetPassword = () => {
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Must be at least 6 characters
+                Måste vara minst 6 tecken
               </p>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="confirm-new-password">Confirm New Password</Label>
+              <Label htmlFor="confirm-new-password">Bekräfta nytt lösenord</Label>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                 <Input
@@ -181,7 +181,7 @@ const ResetPassword = () => {
               </div>
             </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? 'Updating...' : 'Update Password'}
+              {isLoading ? 'Uppdaterar...' : 'Uppdatera lösenord'}
             </Button>
           </form>
         </CardContent>

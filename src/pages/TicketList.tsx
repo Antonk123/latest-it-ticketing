@@ -49,15 +49,15 @@ const TicketList = () => {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">All Tickets</h1>
+            <h1 className="text-2xl font-bold text-foreground">Alla ärenden</h1>
             <p className="text-muted-foreground mt-1">
-              {filteredTickets.length} active ticket{filteredTickets.length !== 1 ? 's' : ''}
+              {filteredTickets.length} aktiv{filteredTickets.length !== 1 ? 'a' : 't'} ärende{filteredTickets.length !== 1 ? 'n' : ''}
             </p>
           </div>
           <Link to="/tickets/new">
             <Button className="gap-2">
               <Plus className="w-4 h-4" />
-              New Ticket
+              Nytt ärende
             </Button>
           </Link>
         </div>
@@ -68,7 +68,7 @@ const TicketList = () => {
             <SearchBar
               value={search}
               onChange={setSearch}
-              placeholder="Search tickets..."
+              placeholder="Sök ärenden..."
             />
           </div>
           <div className="flex gap-2 flex-wrap">
@@ -77,30 +77,30 @@ const TicketList = () => {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="open">Open</SelectItem>
-                <SelectItem value="in-progress">In Progress</SelectItem>
-                <SelectItem value="resolved">Resolved</SelectItem>
+                <SelectItem value="all">Alla statusar</SelectItem>
+                <SelectItem value="open">Öppen</SelectItem>
+                <SelectItem value="in-progress">Pågående</SelectItem>
+                <SelectItem value="resolved">Löst</SelectItem>
               </SelectContent>
             </Select>
             <Select value={priorityFilter} onValueChange={(v) => setPriorityFilter(v as TicketPriority | 'all')}>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Priority" />
+                <SelectValue placeholder="Prioritet" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Priority</SelectItem>
-                <SelectItem value="low">Low</SelectItem>
+                <SelectItem value="all">Alla prioriteter</SelectItem>
+                <SelectItem value="low">Låg</SelectItem>
                 <SelectItem value="medium">Medium</SelectItem>
-                <SelectItem value="high">High</SelectItem>
-                <SelectItem value="critical">Critical</SelectItem>
+                <SelectItem value="high">Hög</SelectItem>
+                <SelectItem value="critical">Kritisk</SelectItem>
               </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v)}>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Category" />
+                <SelectValue placeholder="Kategori" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">Alla kategorier</SelectItem>
                 {categories.map(cat => (
                   <SelectItem key={cat.id} value={cat.id}>{cat.label}</SelectItem>
                 ))}

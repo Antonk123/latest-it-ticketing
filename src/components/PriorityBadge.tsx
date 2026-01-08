@@ -7,10 +7,10 @@ interface PriorityBadgeProps {
 }
 
 const priorityLabels: Record<TicketPriority, string> = {
-  'low': 'Low',
+  'low': 'Låg',
   'medium': 'Medium',
-  'high': 'High',
-  'critical': 'Critical',
+  'high': 'Hög',
+  'critical': 'Kritisk',
 };
 
 export const PriorityBadge = ({ priority, className }: PriorityBadgeProps) => {

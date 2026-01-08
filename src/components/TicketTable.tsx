@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { useEffect, useState } from 'react';
 import { Ticket, User } from '@/types/ticket';
 import { StatusBadge } from './StatusBadge';
@@ -32,7 +33,7 @@ export const TicketTable = ({ tickets, users }: TicketTableProps) => {
 
   const getUserName = (userId: string) => {
     const user = users.find(u => u.id === userId);
-    return user?.name || 'Unknown';
+    return user?.name || 'Okänd';
   };
 
   const getProgress = (ticketId: string) => {
@@ -74,7 +75,7 @@ export const TicketTable = ({ tickets, users }: TicketTableProps) => {
   if (tickets.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
-        No tickets found
+        Inga ärenden hittades
       </div>
     );
   }
@@ -84,13 +85,13 @@ export const TicketTable = ({ tickets, users }: TicketTableProps) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Title</TableHead>
+            <TableHead>Titel</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Priority</TableHead>
-            <TableHead>Category</TableHead>
-            <TableHead>Progress</TableHead>
-            <TableHead>Requester</TableHead>
-            <TableHead>Created</TableHead>
+            <TableHead>Prioritet</TableHead>
+            <TableHead>Kategori</TableHead>
+            <TableHead>Förlopp</TableHead>
+            <TableHead>Beställare</TableHead>
+            <TableHead>Skapad</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -134,7 +135,7 @@ export const TicketTable = ({ tickets, users }: TicketTableProps) => {
                 {getUserName(ticket.requesterId)}
               </TableCell>
               <TableCell className="text-muted-foreground">
-                {format(ticket.createdAt, 'MMM d, yyyy')}
+                {format(ticket.createdAt, 'd MMM yyyy', { locale: sv })}
               </TableCell>
             </TableRow>
           ))}

@@ -82,23 +82,23 @@ export const GlobalSearch = ({ tickets, users }: GlobalSearchProps) => {
         className="flex items-center gap-2 px-3 py-2 text-sm text-muted-foreground bg-muted/50 hover:bg-muted rounded-lg transition-colors w-full sm:w-auto"
       >
         <Search className="w-4 h-4" />
-        <span className="hidden sm:inline">Search everything...</span>
-        <span className="sm:hidden">Search...</span>
+        <span className="hidden sm:inline">Sök överallt...</span>
+        <span className="sm:hidden">Sök...</span>
         <kbd className="hidden sm:inline-flex pointer-events-none h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
       <CommandDialog open={open} onOpenChange={setOpen}>
         <CommandInput 
-          placeholder="Search tickets, users..." 
+          placeholder="Sök ärenden, användare..." 
           value={search}
           onValueChange={setSearch}
         />
         <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+          <CommandEmpty>Inga resultat hittades.</CommandEmpty>
           
           {filteredTickets.length > 0 && (
-            <CommandGroup heading="Tickets">
+            <CommandGroup heading="Ärenden">
               {filteredTickets.map((ticket) => (
                 <CommandItem
                   key={ticket.id}
@@ -128,7 +128,7 @@ export const GlobalSearch = ({ tickets, users }: GlobalSearchProps) => {
           {filteredUsers.length > 0 && (
             <>
               <CommandSeparator />
-              <CommandGroup heading="Users">
+              <CommandGroup heading="Användare">
                 {filteredUsers.map((user) => {
                   const ticketCount = getUserTicketCount(user.id);
                   return (
@@ -144,7 +144,7 @@ export const GlobalSearch = ({ tickets, users }: GlobalSearchProps) => {
                       </div>
                       {ticketCount > 0 && (
                         <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
-                          {ticketCount} ticket{ticketCount !== 1 ? 's' : ''}
+                          {ticketCount} ärende{ticketCount !== 1 ? 'n' : ''}
                         </span>
                       )}
                       <ArrowRight className="w-4 h-4 text-muted-foreground" />

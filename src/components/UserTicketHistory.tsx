@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { Ticket } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { StatusBadge } from '@/components/StatusBadge';
@@ -36,7 +37,7 @@ export const UserTicketHistory = ({ userId }: UserTicketHistoryProps) => {
   if (isLoading) {
     return (
       <div className="py-4 text-sm text-muted-foreground text-center">
-        Loading tickets...
+        Laddar ärenden...
       </div>
     );
   }
@@ -45,7 +46,7 @@ export const UserTicketHistory = ({ userId }: UserTicketHistoryProps) => {
     return (
       <div className="py-4 flex flex-col items-center text-muted-foreground">
         <Ticket className="w-8 h-8 mb-2" />
-        <p className="text-sm">No tickets linked to this user</p>
+        <p className="text-sm">Inga ärenden kopplade till denna användare</p>
       </div>
     );
   }
@@ -54,15 +55,15 @@ export const UserTicketHistory = ({ userId }: UserTicketHistoryProps) => {
     <div className="space-y-4">
       {/* Stats Summary */}
       <div className="flex flex-wrap gap-3 text-sm">
-        <span className="font-medium">{stats.total} Total</span>
+        <span className="font-medium">{stats.total} Totalt</span>
         <span className="text-muted-foreground">|</span>
-        <span className="text-blue-600">{stats.open} Open</span>
+        <span className="text-blue-600">{stats.open} Öppna</span>
         <span className="text-muted-foreground">|</span>
-        <span className="text-yellow-600">{stats.inProgress} In Progress</span>
+        <span className="text-yellow-600">{stats.inProgress} Pågående</span>
         <span className="text-muted-foreground">|</span>
-        <span className="text-green-600">{stats.resolved} Resolved</span>
+        <span className="text-green-600">{stats.resolved} Lösta</span>
         <span className="text-muted-foreground">|</span>
-        <span className="text-gray-600">{stats.closed} Closed</span>
+        <span className="text-gray-600">{stats.closed} Stängda</span>
       </div>
 
       {/* Ticket Table */}
@@ -70,10 +71,10 @@ export const UserTicketHistory = ({ userId }: UserTicketHistoryProps) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Title</TableHead>
+              <TableHead>Titel</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Priority</TableHead>
-              <TableHead>Created</TableHead>
+              <TableHead>Prioritet</TableHead>
+              <TableHead>Skapad</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -94,7 +95,7 @@ export const UserTicketHistory = ({ userId }: UserTicketHistoryProps) => {
                   <PriorityBadge priority={ticket.priority} />
                 </TableCell>
                 <TableCell className="text-muted-foreground text-sm">
-                  {format(ticket.createdAt, 'MMM d, yyyy')}
+                  {format(ticket.createdAt, 'd MMM yyyy', { locale: sv })}
                 </TableCell>
               </TableRow>
             ))}

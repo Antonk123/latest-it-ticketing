@@ -32,7 +32,7 @@ const Login = () => {
     if (error) {
       toast.error(error);
     } else {
-      toast.success("Signed in successfully");
+      toast.success("Inloggad");
       navigate("/");
     }
     setIsLoading(false);
@@ -42,12 +42,12 @@ const Login = () => {
     e.preventDefault();
 
     if (password.length < 6) {
-      toast.error("Password must be at least 6 characters");
+      toast.error("Lösenordet måste vara minst 6 tecken");
       return;
     }
 
     if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Lösenorden matchar inte");
       return;
     }
 
@@ -57,7 +57,7 @@ const Login = () => {
     if (error) {
       toast.error(error);
     } else {
-      toast.success("Account created successfully");
+      toast.success("Konto skapat");
       navigate("/");
     }
     setIsLoading(false);
@@ -67,7 +67,7 @@ const Login = () => {
     e.preventDefault();
 
     if (!email) {
-      toast.error("Please enter your email address");
+      toast.error("Ange din e-postadress");
       return;
     }
 
@@ -81,7 +81,7 @@ const Login = () => {
       toast.error(error.message);
     } else {
       setResetEmailSent(true);
-      toast.success("Password reset email sent");
+      toast.success("E-post för lösenordsåterställning skickad");
     }
     setIsLoading(false);
   };
@@ -94,19 +94,18 @@ const Login = () => {
             <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
               <KeyRound className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle>Reset Password</CardTitle>
+            <CardTitle>Återställ lösenord</CardTitle>
             <CardDescription>
               {resetEmailSent
-                ? "Check your email for a password reset link"
-                : "Enter your email to receive a password reset link"}
+                ? "Kontrollera din e-post för en återställningslänk"
+                : "Ange din e-post för att få en återställningslänk"}
             </CardDescription>
           </CardHeader>
           <CardContent>
             {resetEmailSent ? (
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  We've sent a password reset link to <strong>{email}</strong>. Click the link in the email to reset
-                  your password.
+                  Vi har skickat en återställningslänk till <strong>{email}</strong>. Klicka på länken i e-posten för att återställa ditt lösenord.
                 </p>
                 <Button
                   variant="outline"
@@ -117,19 +116,19 @@ const Login = () => {
                   }}
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Back to Sign In
+                  Tillbaka till inloggning
                 </Button>
               </div>
             ) : (
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="reset-email">Email</Label>
+                  <Label htmlFor="reset-email">E-post</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="reset-email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="namn@prefabmastarna.se"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -138,7 +137,7 @@ const Login = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send Reset Link"}
+                  {isLoading ? "Skickar..." : "Skicka återställningslänk"}
                 </Button>
                 <Button
                   type="button"
@@ -147,7 +146,7 @@ const Login = () => {
                   onClick={() => setShowForgotPassword(false)}
                 >
                   <ArrowLeft className="w-4 h-4" />
-                  Back to Sign In
+                  Tillbaka till inloggning
                 </Button>
               </form>
             )}
@@ -164,7 +163,7 @@ const Login = () => {
           <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-4">
             <Lock className="w-6 h-6 text-primary" />
           </div>
-          <CardTitle>IT Ticket System</CardTitle>
+          <CardTitle>IT-ärendesystem</CardTitle>
           <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
@@ -183,13 +182,13 @@ const Login = () => {
             <TabsContent value="signin">
               <form onSubmit={handleSignIn} className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signin-email">Email</Label>
+                  <Label htmlFor="signin-email">E-post</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="signin-email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="namn@prefabmastarna.se"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -199,13 +198,13 @@ const Login = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="signin-password">Password</Label>
+                    <Label htmlFor="signin-password">Lösenord</Label>
                     <button
                       type="button"
                       className="text-xs text-primary hover:underline"
                       onClick={() => setShowForgotPassword(true)}
                     >
-                      Forgot password?
+                      Glömt lösenord?
                     </button>
                   </div>
                   <div className="relative">
@@ -222,7 +221,7 @@ const Login = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Signing in..." : "Sign In"}
+                  {isLoading ? "Loggar in..." : "Logga in"}
                 </Button>
                 <div className="mt-4 pt-4 border-t text-center">
                   <p className="text-sm text-muted-foreground mb-2">Behöver du hjälp?</p>
@@ -240,13 +239,13 @@ const Login = () => {
             <TabsContent value="signup">
               <form onSubmit={handleSignUp} className="space-y-4 pt-4">
                 <div className="space-y-2">
-                  <Label htmlFor="signup-email">Email</Label>
+                  <Label htmlFor="signup-email">E-post</Label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="you@example.com"
+                      placeholder="namn@prefabmastarna.se"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -255,7 +254,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                  <Label htmlFor="signup-password">Lösenord</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -270,7 +269,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-confirm">Confirm Password</Label>
+                  <Label htmlFor="signup-confirm">Bekräfta lösenord</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -285,7 +284,7 @@ const Login = () => {
                   </div>
                 </div>
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Create Account"}
+                  {isLoading ? "Skapar konto..." : "Skapa konto"}
                 </Button>
               </form>
             </TabsContent>
