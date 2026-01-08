@@ -6,7 +6,7 @@ import { useUsers } from '@/hooks/useUsers';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { TicketTable } from '@/components/TicketTable';
-import { BarChart3, PieChart as PieChartIcon, Filter } from 'lucide-react';
+import { BarChart3, PieChart as PieChartIcon, Filter, Calendar } from 'lucide-react';
 
 const COLORS = [
   'hsl(var(--primary))',
@@ -27,12 +27,51 @@ const Reports = () => {
   const { tickets } = useTickets();
   const { users } = useUsers();
   const [selectedUserId, setSelectedUserId] = useState<string>('all');
+  const [selectedYear, setSelectedYear] = useState<string>('all');
 
-  // Tickets by requester (user)
+  // Get available years from tickets
+  const availableYears = useMemo(() => {
+    const years = new Set<number>();
+    tickets.forEach((ticket) => {
+      const createdYear = new Date(ticket.createdAt).getFullYear();
+      years.add(createdYear);
+      if (ticket.closedAt) {
+        years.add(new Date(ticket.closedAt).getFullYear());
+      }
+    });
+    return Array.from(years).sort((a, b) => b - a);
+  }, [tickets]);
+
+  // Filter tickets by year
+  const yearFilteredTickets = useMemo(() => {
+    if (selectedYear === 'all') return tickets;
+    const year = parseInt(selectedYear);
+    return tickets.filter((ticket) => {
+      const createdYear = new Date(ticket.createdAt).getFullYear();
+      return createdYear === year;
+    });
+  }, [tickets, selectedYear]);
+
+  // Tickets closed by year (for overview chart)
+  const ticketsClosedByYear = useMemo(() => {
+    const yearMap = new Map<number, number>();
+    tickets.forEach((ticket) => {
+      if (ticket.closedAt) {
+        const year = new Date(ticket.closedAt).getFullYear();
+        const count = yearMap.get(year) || 0;
+        yearMap.set(year, count + 1);
+      }
+    });
+    return Array.from(yearMap.entries())
+      .map(([year, count]) => ({ year: year.toString(), count }))
+      .sort((a, b) => parseInt(a.year) - parseInt(b.year));
+  }, [tickets]);
+
+  // Tickets by requester (user) - filtered by year
   const ticketsByUser = useMemo(() => {
     const counts: Record<string, { name: string; count: number; userId: string }> = {};
     
-    tickets.forEach(ticket => {
+    yearFilteredTickets.forEach(ticket => {
       const user = users.find(u => u.id === ticket.requesterId);
       const userName = user?.name || 'Unassigned';
       const userId = ticket.requesterId || 'unassigned';
@@ -44,9 +83,9 @@ const Reports = () => {
     });
     
     return Object.values(counts).sort((a, b) => b.count - a.count);
-  }, [tickets, users]);
+  }, [yearFilteredTickets, users]);
 
-  // Tickets by status
+  // Tickets by status - filtered by year
   const ticketsByStatus = useMemo(() => {
     const counts: Record<string, number> = {
       open: 0,
@@ -55,7 +94,7 @@ const Reports = () => {
       closed: 0,
     };
     
-    tickets.forEach(ticket => {
+    yearFilteredTickets.forEach(ticket => {
       counts[ticket.status] = (counts[ticket.status] || 0) + 1;
     });
     
@@ -64,9 +103,9 @@ const Reports = () => {
       value: count,
       status,
     }));
-  }, [tickets]);
+  }, [yearFilteredTickets]);
 
-  // Tickets by priority
+  // Tickets by priority - filtered by year
   const ticketsByPriority = useMemo(() => {
     const counts: Record<string, number> = {
       low: 0,
@@ -75,7 +114,7 @@ const Reports = () => {
       critical: 0,
     };
     
-    tickets.forEach(ticket => {
+    yearFilteredTickets.forEach(ticket => {
       counts[ticket.priority] = (counts[ticket.priority] || 0) + 1;
     });
     
@@ -83,18 +122,18 @@ const Reports = () => {
       name: priority.charAt(0).toUpperCase() + priority.slice(1),
       value: count,
     }));
-  }, [tickets]);
+  }, [yearFilteredTickets]);
 
   // Filtered tickets by selected user
   const filteredTickets = useMemo(() => {
     if (selectedUserId === 'all') {
-      return tickets;
+      return yearFilteredTickets;
     }
     if (selectedUserId === 'unassigned') {
-      return tickets.filter(t => !t.requesterId);
+      return yearFilteredTickets.filter(t => !t.requesterId);
     }
-    return tickets.filter(t => t.requesterId === selectedUserId);
-  }, [tickets, selectedUserId]);
+    return yearFilteredTickets.filter(t => t.requesterId === selectedUserId);
+  }, [yearFilteredTickets, selectedUserId]);
 
   const selectedUserName = useMemo(() => {
     if (selectedUserId === 'all') return 'All Users';
@@ -105,10 +144,59 @@ const Reports = () => {
   return (
     <Layout>
       <div className="space-y-8">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Reports</h1>
-          <p className="text-muted-foreground mt-1">Ticket analytics and insights</p>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Reports</h1>
+            <p className="text-muted-foreground mt-1">Ticket analytics and insights</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Calendar className="h-4 w-4 text-muted-foreground" />
+            <Select value={selectedYear} onValueChange={setSelectedYear}>
+              <SelectTrigger className="w-[140px]">
+                <SelectValue placeholder="Select year" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Years</SelectItem>
+                {availableYears.map((year) => (
+                  <SelectItem key={year} value={year.toString()}>
+                    {year}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
+
+        {/* Tickets Closed by Year */}
+        <Card>
+          <CardHeader className="flex flex-row items-center gap-2">
+            <Calendar className="h-5 w-5 text-primary" />
+            <CardTitle className="text-lg">Tickets Closed by Year</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {ticketsClosedByYear.length === 0 ? (
+              <div className="h-[200px] flex items-center justify-center text-muted-foreground">
+                No closed tickets
+              </div>
+            ) : (
+              <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={ticketsClosedByYear} margin={{ left: 20, right: 20 }}>
+                  <XAxis dataKey="year" />
+                  <YAxis allowDecimals={false} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                    }}
+                    cursor={{ fill: 'hsl(var(--muted))' }}
+                  />
+                  <Bar dataKey="count" fill="hsl(var(--chart-3))" radius={[4, 4, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Charts Row */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -161,7 +249,7 @@ const Reports = () => {
               <CardTitle className="text-lg">Tickets by Status</CardTitle>
             </CardHeader>
             <CardContent>
-              {tickets.length === 0 ? (
+              {yearFilteredTickets.length === 0 ? (
                 <div className="h-[300px] flex items-center justify-center text-muted-foreground">
                   No ticket data available
                 </div>
@@ -208,7 +296,7 @@ const Reports = () => {
             <CardTitle className="text-lg">Tickets by Priority</CardTitle>
           </CardHeader>
           <CardContent>
-            {tickets.length === 0 ? (
+            {yearFilteredTickets.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground">
                 No ticket data available
               </div>
