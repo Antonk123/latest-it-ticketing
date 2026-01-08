@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
 import { Plus, Pencil, Trash2, Users as UsersIcon, Ticket } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
+import { useTickets } from '@/hooks/useTickets';
 import { Layout } from '@/components/Layout';
 import { SearchBar } from '@/components/SearchBar';
 import { UserTicketHistory } from '@/components/UserTicketHistory';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -37,11 +39,22 @@ import { User } from '@/types/ticket';
 
 const UserList = () => {
   const { users, addUser, updateUser, deleteUser } = useUsers();
+  const { tickets } = useTickets();
   const [search, setSearch] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', department: '' });
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+  const openTicketsByUser = useMemo(() => {
+    const counts: Record<string, number> = {};
+    tickets.forEach(ticket => {
+      if (ticket.requesterId && ticket.status !== 'closed') {
+        counts[ticket.requesterId] = (counts[ticket.requesterId] || 0) + 1;
+      }
+    });
+    return counts;
+  }, [tickets]);
 
   const filteredUsers = users.filter(user => {
     if (search === '') return true;
@@ -162,7 +175,14 @@ const UserList = () => {
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-medium text-foreground truncate">{user.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-medium text-foreground truncate">{user.name}</h3>
+                        {openTicketsByUser[user.id] > 0 && (
+                          <Badge variant="secondary" className="shrink-0">
+                            {openTicketsByUser[user.id]} open
+                          </Badge>
+                        )}
+                      </div>
                       <p className="text-sm text-muted-foreground truncate">{user.email}</p>
                       {user.department && (
                         <p className="text-sm text-muted-foreground mt-1">{user.department}</p>
