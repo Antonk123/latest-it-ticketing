@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Plus, Pencil, Trash2, Users as UsersIcon } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users as UsersIcon, ChevronDown, ChevronUp } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { Layout } from '@/components/Layout';
 import { SearchBar } from '@/components/SearchBar';
+import { UserTicketHistory } from '@/components/UserTicketHistory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -24,6 +25,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User } from '@/types/ticket';
@@ -34,6 +40,7 @@ const UserList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', department: '' });
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
 
   const filteredUsers = users.filter(user => {
     if (search === '') return true;
@@ -195,6 +202,27 @@ const UserList = () => {
                       </AlertDialog>
                     </div>
                   </div>
+
+                  {/* Expandable Ticket History */}
+                  <Collapsible
+                    open={expandedUserId === user.id}
+                    onOpenChange={(open) => setExpandedUserId(open ? user.id : null)}
+                    className="mt-3"
+                  >
+                    <CollapsibleTrigger asChild>
+                      <Button variant="ghost" size="sm" className="w-full justify-between text-muted-foreground hover:text-foreground">
+                        <span>View Ticket History</span>
+                        {expandedUserId === user.id ? (
+                          <ChevronUp className="w-4 h-4" />
+                        ) : (
+                          <ChevronDown className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3 border-t mt-3">
+                      <UserTicketHistory userId={user.id} />
+                    </CollapsibleContent>
+                  </Collapsible>
                 </CardContent>
               </Card>
             ))}
