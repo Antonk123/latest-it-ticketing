@@ -49,21 +49,25 @@ const Dashboard = () => {
             title="Öppna ärenden"
             value={stats.open}
             icon={<Ticket className="w-6 h-6" />}
+            to="/tickets?status=open"
           />
           <StatsCard
             title="Pågående"
             value={stats.inProgress}
             icon={<Clock className="w-6 h-6" />}
+            to="/tickets?status=in-progress"
           />
           <StatsCard
             title="Lösta"
             value={stats.resolved}
             icon={<CheckCircle className="w-6 h-6" />}
+            to="/tickets?status=resolved"
           />
           <StatsCard
             title="Arkiverade"
             value={stats.closed}
             icon={<Archive className="w-6 h-6" />}
+            to="/archive"
           />
         </div>
 
