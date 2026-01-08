@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { CheckCircle, Send, AlertCircle } from 'lucide-react';
+import { CheckCircle, Send, AlertCircle, X } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,6 +16,7 @@ interface Category {
 }
 
 const PublicTicketForm = () => {
+  const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -104,7 +106,15 @@ const PublicTicketForm = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-lg">
+      <Card className="w-full max-w-lg relative">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="absolute right-2 top-2"
+          onClick={() => navigate('/')}
+        >
+          <X className="h-4 w-4" />
+        </Button>
         <CardHeader>
           <CardTitle>Skicka en supportförfrågan</CardTitle>
           <CardDescription>
