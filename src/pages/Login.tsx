@@ -226,6 +226,18 @@ const Login = () => {
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Signing in...' : 'Sign In'}
                 </Button>
+                <div className="mt-4 pt-4 border-t text-center">
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Behöver du hjälp?
+                  </p>
+                  <Link 
+                    to="/submit-ticket" 
+                    className="inline-flex items-center gap-2 text-primary hover:underline text-sm"
+                  >
+                    <Ticket className="w-4 h-4" />
+                    Skapa ärende
+                  </Link>
+                </div>
               </form>
             </TabsContent>
             
@@ -284,19 +296,6 @@ const Login = () => {
           </Tabs>
         </CardContent>
       </Card>
-
-      <div className="mt-6 text-center">
-        <p className="text-sm text-muted-foreground mb-2">
-          Behöver du hjälp?
-        </p>
-        <Link 
-          to="/submit-ticket" 
-          className="inline-flex items-center gap-2 text-primary hover:underline"
-        >
-          <Ticket className="w-4 h-4" />
-          Skapa ärende
-        </Link>
-      </div>
     </div>
   );
 };
