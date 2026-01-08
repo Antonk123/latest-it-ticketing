@@ -24,8 +24,8 @@ const STATUS_COLORS: Record<string, string> = {
 };
 
 const MONTH_NAMES = [
-  'January', 'February', 'March', 'April', 'May', 'June',
-  'July', 'August', 'September', 'October', 'November', 'December'
+  'Januari', 'Februari', 'Mars', 'April', 'Maj', 'Juni',
+  'Juli', 'Augusti', 'September', 'Oktober', 'November', 'December'
 ];
 
 const Reports = () => {
@@ -114,7 +114,7 @@ const Reports = () => {
     
     yearMonthFilteredTickets.forEach(ticket => {
       const user = users.find(u => u.id === ticket.requesterId);
-      const userName = user?.name || 'Unassigned';
+      const userName = user?.name || 'Ej tilldelad';
       const userId = ticket.requesterId || 'unassigned';
       
       if (!counts[userId]) {
@@ -139,8 +139,15 @@ const Reports = () => {
       counts[ticket.status] = (counts[ticket.status] || 0) + 1;
     });
     
+    const statusLabels: Record<string, string> = {
+      'open': 'Öppen',
+      'in-progress': 'Pågående',
+      'resolved': 'Löst',
+      'closed': 'Stängd',
+    };
+    
     return Object.entries(counts).map(([status, count]) => ({
-      name: status.charAt(0).toUpperCase() + status.slice(1).replace('-', ' '),
+      name: statusLabels[status] || status,
       value: count,
       status,
     }));
@@ -159,8 +166,15 @@ const Reports = () => {
       counts[ticket.priority] = (counts[ticket.priority] || 0) + 1;
     });
     
+    const priorityLabels: Record<string, string> = {
+      'low': 'Låg',
+      'medium': 'Medium',
+      'high': 'Hög',
+      'critical': 'Kritisk',
+    };
+    
     return Object.entries(counts).map(([priority, count]) => ({
-      name: priority.charAt(0).toUpperCase() + priority.slice(1),
+      name: priorityLabels[priority] || priority,
       value: count,
     }));
   }, [yearMonthFilteredTickets]);
@@ -177,9 +191,9 @@ const Reports = () => {
   }, [yearMonthFilteredTickets, selectedUserId]);
 
   const selectedUserName = useMemo(() => {
-    if (selectedUserId === 'all') return 'All Users';
-    if (selectedUserId === 'unassigned') return 'Unassigned';
-    return users.find(u => u.id === selectedUserId)?.name || 'Unknown';
+    if (selectedUserId === 'all') return 'Alla användare';
+    if (selectedUserId === 'unassigned') return 'Ej tilldelad';
+    return users.find(u => u.id === selectedUserId)?.name || 'Okänd';
   }, [selectedUserId, users]);
 
   return (
@@ -187,8 +201,8 @@ const Reports = () => {
       <div className="space-y-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Reports</h1>
-            <p className="text-muted-foreground mt-1">Ticket analytics and insights</p>
+            <h1 className="text-2xl font-bold text-foreground">Rapporter</h1>
+            <p className="text-muted-foreground mt-1">Ärendeanalys och insikter</p>
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <Calendar className="h-4 w-4 text-muted-foreground" />
@@ -197,10 +211,10 @@ const Reports = () => {
               if (value === 'all') setSelectedMonth('all');
             }}>
               <SelectTrigger className="w-[140px]">
-                <SelectValue placeholder="Select year" />
+                <SelectValue placeholder="Välj år" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Years</SelectItem>
+                <SelectItem value="all">Alla år</SelectItem>
                 {availableYears.map((year) => (
                   <SelectItem key={year} value={year.toString()}>
                     {year}
@@ -211,10 +225,10 @@ const Reports = () => {
             {selectedYear !== 'all' && (
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
                 <SelectTrigger className="w-[140px]">
-                  <SelectValue placeholder="Select month" />
+                  <SelectValue placeholder="Välj månad" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">All Months</SelectItem>
+                  <SelectItem value="all">Alla månader</SelectItem>
                   {MONTH_NAMES.map((month, index) => (
                     <SelectItem key={index} value={index.toString()}>
                       {month}
@@ -230,12 +244,12 @@ const Reports = () => {
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <Calendar className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Tickets Closed by Year</CardTitle>
+            <CardTitle className="text-lg">Ärenden stängda per år</CardTitle>
           </CardHeader>
           <CardContent>
             {ticketsClosedByYear.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                No closed tickets
+                Inga stängda ärenden
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
@@ -262,12 +276,12 @@ const Reports = () => {
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <Calendar className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Tickets Created by Month ({selectedYear})</CardTitle>
+              <CardTitle className="text-lg">Ärenden skapade per månad ({selectedYear})</CardTitle>
             </CardHeader>
             <CardContent>
               {ticketsByMonth.every(m => m.count === 0) ? (
                 <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                  No tickets in {selectedYear}
+                  Inga ärenden under {selectedYear}
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height={200}>
@@ -302,12 +316,12 @@ const Reports = () => {
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <BarChart3 className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Tickets by Requester</CardTitle>
+              <CardTitle className="text-lg">Ärenden per beställare</CardTitle>
             </CardHeader>
             <CardContent>
               {ticketsByUser.length === 0 ? (
                 <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  No ticket data available
+                  Ingen ärendedata tillgänglig
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
@@ -344,12 +358,12 @@ const Reports = () => {
           <Card>
             <CardHeader className="flex flex-row items-center gap-2">
               <PieChartIcon className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">Tickets by Status</CardTitle>
+              <CardTitle className="text-lg">Ärenden per status</CardTitle>
             </CardHeader>
             <CardContent>
               {yearMonthFilteredTickets.length === 0 ? (
                 <div className="h-[300px] flex items-center justify-center text-muted-foreground">
-                  No ticket data available
+                  Ingen ärendedata tillgänglig
                 </div>
               ) : (
                 <ResponsiveContainer width="100%" height={300}>
@@ -391,12 +405,12 @@ const Reports = () => {
         <Card>
           <CardHeader className="flex flex-row items-center gap-2">
             <BarChart3 className="h-5 w-5 text-primary" />
-            <CardTitle className="text-lg">Tickets by Priority</CardTitle>
+            <CardTitle className="text-lg">Ärenden per prioritet</CardTitle>
           </CardHeader>
           <CardContent>
             {yearMonthFilteredTickets.length === 0 ? (
               <div className="h-[200px] flex items-center justify-center text-muted-foreground">
-                No ticket data available
+                Ingen ärendedata tillgänglig
               </div>
             ) : (
               <ResponsiveContainer width="100%" height={200}>
@@ -428,15 +442,15 @@ const Reports = () => {
             <div className="flex items-center gap-2">
               <Filter className="h-5 w-5 text-primary" />
               <CardTitle className="text-lg">
-                Tickets for {selectedUserName}
+                Ärenden för {selectedUserName}
               </CardTitle>
             </div>
             <Select value={selectedUserId} onValueChange={setSelectedUserId}>
               <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Filter by user" />
+                <SelectValue placeholder="Filtrera på användare" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Users</SelectItem>
+                <SelectItem value="all">Alla användare</SelectItem>
                 {ticketsByUser.map((item) => (
                   <SelectItem key={item.userId} value={item.userId}>
                     {item.name} ({item.count})

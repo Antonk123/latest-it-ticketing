@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { format } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { ArrowLeft, Pencil, Trash2, Clock, User as UserIcon, Calendar, FileText, Lightbulb, Paperclip, Download } from 'lucide-react';
 import { useTickets } from '@/hooks/useTickets';
 import { useUsers } from '@/hooks/useUsers';
@@ -42,6 +43,13 @@ const formatFileSize = (bytes: number | null) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
+const statusLabels: Record<TicketStatus, string> = {
+  'open': 'Öppen',
+  'in-progress': 'Pågående',
+  'resolved': 'Löst',
+  'closed': 'Stängd',
+};
+
 const TicketDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,9 +72,9 @@ const TicketDetail = () => {
     return (
       <Layout>
         <div className="text-center py-16">
-          <p className="text-muted-foreground">Ticket not found</p>
+          <p className="text-muted-foreground">Ärendet hittades inte</p>
           <Link to="/tickets">
-            <Button className="mt-4">Back to Tickets</Button>
+            <Button className="mt-4">Tillbaka till ärenden</Button>
           </Link>
         </div>
       </Layout>
@@ -75,12 +83,12 @@ const TicketDetail = () => {
 
   const handleStatusChange = (status: TicketStatus) => {
     updateTicket(ticket.id, { status });
-    toast.success(`Status updated to ${status}`);
+    toast.success(`Status uppdaterad till ${statusLabels[status]}`);
   };
 
   const handleDelete = () => {
     deleteTicket(ticket.id);
-    toast.success('Ticket deleted');
+    toast.success('Ärendet borttaget');
     navigate('/tickets');
   };
 
@@ -94,32 +102,32 @@ const TicketDetail = () => {
             onClick={() => navigate(-1)}
           >
             <ArrowLeft className="w-4 h-4" />
-            Back
+            Tillbaka
           </Button>
           <div className="flex gap-2">
             <Link to={`/tickets/${ticket.id}/edit`}>
               <Button variant="outline" className="gap-2">
                 <Pencil className="w-4 h-4" />
-                Edit
+                Redigera
               </Button>
             </Link>
             <AlertDialog>
               <AlertDialogTrigger asChild>
                 <Button variant="outline" className="gap-2 text-destructive">
                   <Trash2 className="w-4 h-4" />
-                  Delete
+                  Ta bort
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Delete Ticket</AlertDialogTitle>
+                  <AlertDialogTitle>Ta bort ärende</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete this ticket? This action cannot be undone.
+                    Är du säker på att du vill ta bort detta ärende? Denna åtgärd kan inte ångras.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
-                  <AlertDialogAction onClick={handleDelete}>Delete</AlertDialogAction>
+                  <AlertDialogCancel>Avbryt</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleDelete}>Ta bort</AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -142,23 +150,23 @@ const TicketDetail = () => {
           <CardContent className="space-y-6">
             {/* Quick Status Change */}
             <div className="flex items-center gap-4 p-4 bg-muted/50 rounded-lg">
-              <span className="text-sm font-medium">Quick Actions:</span>
+              <span className="text-sm font-medium">Snabbåtgärder:</span>
               <Select value={ticket.status} onValueChange={handleStatusChange}>
                 <SelectTrigger className="w-[160px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="open">Open</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="resolved">Resolved</SelectItem>
-                  <SelectItem value="closed">Close Ticket</SelectItem>
+                  <SelectItem value="open">Öppen</SelectItem>
+                  <SelectItem value="in-progress">Pågående</SelectItem>
+                  <SelectItem value="resolved">Löst</SelectItem>
+                  <SelectItem value="closed">Stäng ärende</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Description */}
             <div>
-              <h3 className="font-medium text-foreground mb-2">Description</h3>
+              <h3 className="font-medium text-foreground mb-2">Beskrivning</h3>
               <div className="bg-muted/30 p-4 rounded-lg">
                 <MarkdownRenderer content={ticket.description} />
               </div>
@@ -183,7 +191,7 @@ const TicketDetail = () => {
                 <div className="flex items-center gap-2 mb-3">
                   <Paperclip className="w-4 h-4 text-muted-foreground" />
                   <h3 className="font-medium text-foreground">
-                    Attachments ({attachments.length})
+                    Bilagor ({attachments.length})
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -229,8 +237,8 @@ const TicketDetail = () => {
               <div className="flex items-center gap-3">
                 <UserIcon className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Requester</p>
-                  <p className="font-medium">{user?.name || 'Unknown'}</p>
+                  <p className="text-sm text-muted-foreground">Beställare</p>
+                  <p className="font-medium">{user?.name || 'Okänd'}</p>
                   {user?.email && (
                     <p className="text-sm text-muted-foreground">{user.email}</p>
                   )}
@@ -239,24 +247,24 @@ const TicketDetail = () => {
               <div className="flex items-center gap-3">
                 <Calendar className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Created</p>
-                  <p className="font-medium">{format(ticket.createdAt, 'PPP')}</p>
-                  <p className="text-sm text-muted-foreground">{format(ticket.createdAt, 'p')}</p>
+                  <p className="text-sm text-muted-foreground">Skapad</p>
+                  <p className="font-medium">{format(ticket.createdAt, 'PPP', { locale: sv })}</p>
+                  <p className="text-sm text-muted-foreground">{format(ticket.createdAt, 'p', { locale: sv })}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
                 <Clock className="w-5 h-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Last Updated</p>
-                  <p className="font-medium">{format(ticket.updatedAt, 'PPP')}</p>
+                  <p className="text-sm text-muted-foreground">Senast uppdaterad</p>
+                  <p className="font-medium">{format(ticket.updatedAt, 'PPP', { locale: sv })}</p>
                 </div>
               </div>
               {ticket.resolvedAt && (
                 <div className="flex items-center gap-3">
                   <FileText className="w-5 h-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Resolved</p>
-                    <p className="font-medium">{format(ticket.resolvedAt, 'PPP')}</p>
+                    <p className="text-sm text-muted-foreground">Löst</p>
+                    <p className="font-medium">{format(ticket.resolvedAt, 'PPP', { locale: sv })}</p>
                   </div>
                 </div>
               )}
@@ -267,7 +275,7 @@ const TicketDetail = () => {
               <div className="pt-4 border-t">
                 <div className="flex items-center gap-2 mb-2">
                   <Lightbulb className="w-4 h-4 text-primary" />
-                  <h3 className="font-medium text-foreground">Solution</h3>
+                  <h3 className="font-medium text-foreground">Lösning</h3>
                 </div>
                 <div className="bg-primary/5 border border-primary/20 p-4 rounded-lg">
                   <MarkdownRenderer content={ticket.solution} />
@@ -278,7 +286,7 @@ const TicketDetail = () => {
             {/* Notes */}
             {ticket.notes && (
               <div className="pt-4 border-t">
-                <h3 className="font-medium text-foreground mb-2">Internal Notes</h3>
+                <h3 className="font-medium text-foreground mb-2">Interna anteckningar</h3>
                 <p className="text-muted-foreground whitespace-pre-wrap bg-muted/50 p-4 rounded-lg">
                   {ticket.notes}
                 </p>

@@ -7,10 +7,10 @@ interface StatusBadgeProps {
 }
 
 const statusLabels: Record<TicketStatus, string> = {
-  'open': 'Open',
-  'in-progress': 'In Progress',
-  'resolved': 'Resolved',
-  'closed': 'Closed',
+  'open': 'Öppen',
+  'in-progress': 'Pågående',
+  'resolved': 'Löst',
+  'closed': 'Stängd',
 };
 
 export const StatusBadge = ({ status, className }: StatusBadgeProps) => {

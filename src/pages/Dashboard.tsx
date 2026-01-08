@@ -39,29 +39,29 @@ const Dashboard = () => {
     <Layout>
       <div className="space-y-8">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Overview of your IT support tickets</p>
+          <h1 className="text-2xl font-bold text-foreground">Översikt</h1>
+          <p className="text-muted-foreground mt-1">Översikt över dina IT-supportärenden</p>
         </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatsCard
-            title="Open Tickets"
+            title="Öppna ärenden"
             value={stats.open}
             icon={<Ticket className="w-6 h-6" />}
           />
           <StatsCard
-            title="In Progress"
+            title="Pågående"
             value={stats.inProgress}
             icon={<Clock className="w-6 h-6" />}
           />
           <StatsCard
-            title="Resolved"
+            title="Lösta"
             value={stats.resolved}
             icon={<CheckCircle className="w-6 h-6" />}
           />
           <StatsCard
-            title="Archived"
+            title="Arkiverade"
             value={stats.closed}
             icon={<Archive className="w-6 h-6" />}
           />
@@ -74,12 +74,12 @@ const Dashboard = () => {
               <AlertTriangle className="w-5 h-5 text-destructive" />
               <div className="flex-1">
                 <p className="font-medium text-destructive">
-                  {stats.critical} critical ticket{stats.critical > 1 ? 's' : ''} need attention
+                  {stats.critical} kritisk{stats.critical > 1 ? 'a' : 't'} ärende{stats.critical > 1 ? 'n' : ''} kräver uppmärksamhet
                 </p>
               </div>
               <Link to="/tickets?priority=critical">
                 <Button variant="outline" size="sm" className="gap-1">
-                  View all <ArrowRight className="w-4 h-4" />
+                  Visa alla <ArrowRight className="w-4 h-4" />
                 </Button>
               </Link>
             </div>
@@ -89,10 +89,10 @@ const Dashboard = () => {
         {/* Recent Tickets */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-foreground">Recent Tickets</h2>
+            <h2 className="text-lg font-semibold text-foreground">Senaste ärenden</h2>
             <Link to="/tickets">
               <Button variant="ghost" size="sm" className="gap-1">
-                View all <ArrowRight className="w-4 h-4" />
+                Visa alla <ArrowRight className="w-4 h-4" />
               </Button>
             </Link>
           </div>
@@ -100,9 +100,9 @@ const Dashboard = () => {
           {recentTickets.length === 0 ? (
             <div className="text-center py-12 border rounded-lg bg-card">
               <Ticket className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-              <p className="text-muted-foreground">No active tickets</p>
+              <p className="text-muted-foreground">Inga aktiva ärenden</p>
               <Link to="/tickets/new">
-                <Button className="mt-4">Create your first ticket</Button>
+                <Button className="mt-4">Skapa ditt första ärende</Button>
               </Link>
             </div>
           ) : (

@@ -63,7 +63,7 @@ export const TicketChecklist = ({
       <div className="flex items-center gap-2 text-sm text-muted-foreground">
         <CheckSquare className="h-4 w-4" />
         <span>
-          Checklist {totalCount > 0 && `(${completedCount}/${totalCount} completed)`}
+          Checklista {totalCount > 0 && `(${completedCount}/${totalCount} slutförda)`}
         </span>
       </div>
 
@@ -88,7 +88,7 @@ export const TicketChecklist = ({
               } ${isPending(item.id) ? 'italic text-muted-foreground' : ''}`}
             >
               {item.label}
-              {isPending(item.id) && ' (pending)'}
+              {isPending(item.id) && ' (väntar)'}
             </span>
             {!readOnly && (
               <Button
@@ -113,7 +113,7 @@ export const TicketChecklist = ({
       {!readOnly && (
         <div className="flex items-center gap-2">
           <Input
-            placeholder="Add new item..."
+            placeholder="Lägg till ny punkt..."
             value={newItemLabel}
             onChange={(e) => setNewItemLabel(e.target.value)}
             onKeyDown={handleKeyDown}

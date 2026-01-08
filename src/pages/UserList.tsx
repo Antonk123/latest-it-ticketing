@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react';
 import { format } from 'date-fns';
+import { sv } from 'date-fns/locale';
 import { Plus, Pencil, Trash2, Users as UsersIcon, Ticket } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { useTickets } from '@/hooks/useTickets';
@@ -92,59 +93,59 @@ const UserList = () => {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-foreground">Users</h1>
+            <h1 className="text-2xl font-bold text-foreground">Användare</h1>
             <p className="text-muted-foreground mt-1">
-              {users.length} user{users.length !== 1 ? 's' : ''} in the system
+              {users.length} användare i systemet
             </p>
           </div>
           <Dialog open={isDialogOpen} onOpenChange={(open) => !open && handleDialogClose()}>
             <DialogTrigger asChild>
               <Button className="gap-2" onClick={() => setIsDialogOpen(true)}>
                 <Plus className="w-4 h-4" />
-                Add User
+                Lägg till användare
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>{editingUser ? 'Edit User' : 'Add New User'}</DialogTitle>
+                <DialogTitle>{editingUser ? 'Redigera användare' : 'Lägg till ny användare'}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Name *</Label>
+                  <Label htmlFor="name">Namn *</Label>
                   <Input
                     id="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="John Doe"
+                    placeholder="Johan Andersson"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email *</Label>
+                  <Label htmlFor="email">E-post *</Label>
                   <Input
                     id="email"
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="john@company.com"
+                    placeholder="johan@foretag.se"
                     required
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="department">Department</Label>
+                  <Label htmlFor="department">Avdelning</Label>
                   <Input
                     id="department"
                     value={formData.department}
                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                    placeholder="Sales, Engineering, etc."
+                    placeholder="Försäljning, Teknik, etc."
                   />
                 </div>
                 <div className="flex justify-end gap-2 pt-4">
                   <Button type="button" variant="outline" onClick={handleDialogClose}>
-                    Cancel
+                    Avbryt
                   </Button>
                   <Button type="submit">
-                    {editingUser ? 'Save Changes' : 'Add User'}
+                    {editingUser ? 'Spara ändringar' : 'Lägg till användare'}
                   </Button>
                 </div>
               </form>
@@ -156,16 +157,16 @@ const UserList = () => {
           <SearchBar
             value={search}
             onChange={setSearch}
-            placeholder="Search users..."
+            placeholder="Sök användare..."
           />
         </div>
 
         {filteredUsers.length === 0 && search === '' ? (
           <div className="text-center py-16 border rounded-lg bg-card">
             <UsersIcon className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-            <p className="text-muted-foreground">No users yet</p>
+            <p className="text-muted-foreground">Inga användare ännu</p>
             <p className="text-sm text-muted-foreground mt-1">
-              Add users to assign them to tickets
+              Lägg till användare för att tilldela dem ärenden
             </p>
           </div>
         ) : (
@@ -179,7 +180,7 @@ const UserList = () => {
                         <h3 className="font-medium text-foreground truncate">{user.name}</h3>
                         {openTicketsByUser[user.id] > 0 && (
                           <Badge variant="secondary" className="shrink-0">
-                            {openTicketsByUser[user.id]} open
+                            {openTicketsByUser[user.id]} öppna
                           </Badge>
                         )}
                       </div>
@@ -188,7 +189,7 @@ const UserList = () => {
                         <p className="text-sm text-muted-foreground mt-1">{user.department}</p>
                       )}
                       <p className="text-xs text-muted-foreground mt-2">
-                        Added {format(user.createdAt, 'MMM d, yyyy')}
+                        Tillagd {format(user.createdAt, 'd MMM yyyy', { locale: sv })}
                       </p>
                     </div>
                     <div className="flex gap-1 ml-2">
@@ -208,15 +209,15 @@ const UserList = () => {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Delete User</AlertDialogTitle>
+                            <AlertDialogTitle>Ta bort användare</AlertDialogTitle>
                             <AlertDialogDescription>
-                              Are you sure you want to delete {user.name}? This action cannot be undone.
+                              Är du säker på att du vill ta bort {user.name}? Denna åtgärd kan inte ångras.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
+                            <AlertDialogCancel>Avbryt</AlertDialogCancel>
                             <AlertDialogAction onClick={() => deleteUser(user.id)}>
-                              Delete
+                              Ta bort
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -231,7 +232,7 @@ const UserList = () => {
                     onClick={() => setSelectedUser(user)}
                   >
                     <Ticket className="w-4 h-4" />
-                    View Tickets
+                    Visa ärenden
                   </Button>
                 </CardContent>
               </Card>
@@ -243,7 +244,7 @@ const UserList = () => {
         <Sheet open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
           <SheetContent className="sm:max-w-lg overflow-y-auto">
             <SheetHeader>
-              <SheetTitle>{selectedUser?.name}'s Tickets</SheetTitle>
+              <SheetTitle>{selectedUser?.name}s ärenden</SheetTitle>
             </SheetHeader>
             <div className="mt-6">
               {selectedUser && <UserTicketHistory userId={selectedUser.id} />}

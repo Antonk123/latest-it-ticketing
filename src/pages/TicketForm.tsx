@@ -96,9 +96,9 @@ const TicketForm = () => {
   const handleRemoveAttachment = async (attachment: TicketAttachment) => {
     const success = await deleteAttachment(attachment);
     if (success) {
-      toast.success('Attachment deleted');
+      toast.success('Bilaga borttagen');
     } else {
-      toast.error('Failed to delete attachment');
+      toast.error('Kunde inte ta bort bilaga');
     }
   };
 
@@ -117,7 +117,7 @@ const TicketForm = () => {
     e.preventDefault();
     
     if (!formData.requesterId) {
-      toast.error('Please select a requester');
+      toast.error('Välj en beställare');
       return;
     }
 
@@ -137,7 +137,7 @@ const TicketForm = () => {
           await bulkAddChecklistItems(id, pendingChecklistItems.map(i => i.label));
         }
         
-        toast.success('Ticket updated successfully');
+        toast.success('Ärendet uppdaterades');
       } else {
         const newTicket = await addTicket(formData);
         
@@ -153,13 +153,13 @@ const TicketForm = () => {
           }
         }
         
-        toast.success('Ticket created successfully');
+        toast.success('Ärendet skapades');
       }
       
       navigate('/tickets');
     } catch (error) {
       if (import.meta.env.DEV) console.error('Error submitting ticket:', error);
-      toast.error('Failed to save ticket');
+      toast.error('Kunde inte spara ärendet');
     } finally {
       setIsSubmitting(false);
     }
@@ -174,35 +174,35 @@ const TicketForm = () => {
           onClick={() => navigate(-1)}
         >
           <ArrowLeft className="w-4 h-4" />
-          Back
+          Tillbaka
         </Button>
 
         <Card>
           <CardHeader>
-            <CardTitle>{isEditing ? 'Edit Ticket' : 'Create New Ticket'}</CardTitle>
+            <CardTitle>{isEditing ? 'Redigera ärende' : 'Skapa nytt ärende'}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title">Titel *</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  placeholder="Brief description of the issue"
+                  placeholder="Kort beskrivning av problemet"
                   required
                 />
               </div>
 
               <div className="space-y-2">
                 <Label htmlFor="description">
-                  Description * <span className="text-xs text-muted-foreground">(Markdown supported)</span>
+                  Beskrivning * <span className="text-xs text-muted-foreground">(Markdown stöds)</span>
                 </Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Detailed description of the problem... (supports **bold**, *italic*, `code`, lists, etc.)"
+                  placeholder="Detaljerad beskrivning av problemet... (stöder **fetstil**, *kursiv*, `kod`, listor, etc.)"
                   rows={6}
                   required
                   className="font-mono text-sm"
@@ -211,18 +211,18 @@ const TicketForm = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Requester *</Label>
+                  <Label>Beställare *</Label>
                   <Select 
                     value={formData.requesterId} 
                     onValueChange={(v) => setFormData({ ...formData, requesterId: v })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select user" />
+                      <SelectValue placeholder="Välj användare" />
                     </SelectTrigger>
                     <SelectContent>
                       {users.length === 0 ? (
                         <div className="py-2 px-2 text-sm text-muted-foreground">
-                          No users available
+                          Inga användare tillgängliga
                         </div>
                       ) : (
                         users.map(user => (
@@ -235,13 +235,13 @@ const TicketForm = () => {
                   </Select>
                   {users.length === 0 && (
                     <p className="text-sm text-muted-foreground">
-                      <a href="/users" className="text-primary hover:underline">Add users</a> to assign tickets
+                      <a href="/users" className="text-primary hover:underline">Lägg till användare</a> för att tilldela ärenden
                     </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Priority</Label>
+                  <Label>Prioritet</Label>
                   <Select 
                     value={formData.priority} 
                     onValueChange={(v) => setFormData({ ...formData, priority: v as TicketPriority })}
@@ -250,10 +250,10 @@ const TicketForm = () => {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="low">Låg</SelectItem>
                       <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="high">Hög</SelectItem>
+                      <SelectItem value="critical">Kritisk</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -261,13 +261,13 @@ const TicketForm = () => {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>Category</Label>
+                  <Label>Kategori</Label>
                   <Select 
                     value={formData.category || ''} 
                     onValueChange={(v) => setFormData({ ...formData, category: v })}
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder="Välj kategori" />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map(cat => (
@@ -290,10 +290,10 @@ const TicketForm = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="open">Open</SelectItem>
-                        <SelectItem value="in-progress">In Progress</SelectItem>
-                        <SelectItem value="resolved">Resolved</SelectItem>
-                        <SelectItem value="closed">Closed</SelectItem>
+                        <SelectItem value="open">Öppen</SelectItem>
+                        <SelectItem value="in-progress">Pågående</SelectItem>
+                        <SelectItem value="resolved">Löst</SelectItem>
+                        <SelectItem value="closed">Stängd</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -302,7 +302,7 @@ const TicketForm = () => {
 
               {/* File Attachments */}
               <div className="space-y-2">
-                <Label>Attachments</Label>
+                <Label>Bilagor</Label>
                 <FileUpload
                   attachments={attachments}
                   pendingFiles={pendingFiles}
@@ -316,7 +316,7 @@ const TicketForm = () => {
 
               {/* Checklist */}
               <div className="space-y-2">
-                <Label>Checklist / Todo Items</Label>
+                <Label>Checklista / Att göra</Label>
                 <div className="border rounded-lg p-4">
                   <TicketChecklist
                     items={checklistItems}
@@ -332,35 +332,35 @@ const TicketForm = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="solution">
-                  Solution <span className="text-xs text-muted-foreground">(Markdown supported)</span>
+                  Lösning <span className="text-xs text-muted-foreground">(Markdown stöds)</span>
                 </Label>
                 <Textarea
                   id="solution"
                   value={formData.solution}
                   onChange={(e) => setFormData({ ...formData, solution: e.target.value })}
-                  placeholder="Document how the issue was fixed..."
+                  placeholder="Dokumentera hur problemet löstes..."
                   rows={4}
                   className="font-mono text-sm"
                 />
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="notes">Internal Notes</Label>
+                <Label htmlFor="notes">Interna anteckningar</Label>
                 <Textarea
                   id="notes"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  placeholder="Add any internal notes..."
+                  placeholder="Lägg till interna anteckningar..."
                   rows={3}
                 />
               </div>
 
               <div className="flex justify-end gap-2 pt-4">
                 <Button type="button" variant="outline" onClick={() => navigate(-1)}>
-                  Cancel
+                  Avbryt
                 </Button>
                 <Button type="submit" disabled={isSubmitting || isUploading}>
-                  {isSubmitting ? 'Saving...' : isEditing ? 'Save Changes' : 'Create Ticket'}
+                  {isSubmitting ? 'Sparar...' : isEditing ? 'Spara ändringar' : 'Skapa ärende'}
                 </Button>
               </div>
             </form>

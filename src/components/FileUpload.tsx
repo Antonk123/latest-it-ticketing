@@ -92,7 +92,7 @@ export const FileUpload = ({
         />
         <Upload className="w-8 h-8 mx-auto mb-2 text-muted-foreground" />
         <p className="text-sm text-muted-foreground mb-2">
-          Drag and drop files here, or
+          Dra och släpp filer här, eller
         </p>
         <Button
           type="button"
@@ -104,21 +104,21 @@ export const FileUpload = ({
           {isUploading ? (
             <>
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Uploading...
+              Laddar upp...
             </>
           ) : (
-            'Browse Files'
+            'Bläddra filer'
           )}
         </Button>
         <p className="text-xs text-muted-foreground mt-2">
-          Max 10MB per file • Images, PDFs, Documents
+          Max 10MB per fil • Bilder, PDF, Dokument
         </p>
       </div>
 
       {/* Existing Attachments */}
       {attachments.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Attachments</p>
+          <p className="text-sm font-medium">Bilagor</p>
           {attachments.map((attachment) => {
             const Icon = getFileIcon(attachment.fileType);
             return (
@@ -169,7 +169,7 @@ export const FileUpload = ({
       {/* Pending Files */}
       {pendingFiles.length > 0 && (
         <div className="space-y-2">
-          <p className="text-sm font-medium">Files to upload</p>
+          <p className="text-sm font-medium">Filer att ladda upp</p>
           {pendingFiles.map((file, index) => {
             const Icon = getFileIcon(file.type);
             return (
