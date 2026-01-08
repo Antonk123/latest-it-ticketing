@@ -129,7 +129,7 @@ const Login = () => {
                     <Input
                       id="reset-email"
                       type="email"
-                      placeholder="förnamn.efternamn@prefabmastarna.se"
+                      placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -165,18 +165,18 @@ const Login = () => {
             <Lock className="w-6 h-6 text-primary" />
           </div>
           <CardTitle>IT Ticket System</CardTitle>
-          <CardDescription>Sign in or create an account to access the ticket system</CardDescription>
+          <CardDescription></CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue={initialTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin" className="gap-2">
                 <LogIn className="w-4 h-4" />
-                Sign In
+                Logga in
               </TabsTrigger>
               <TabsTrigger value="signup" className="gap-2">
                 <UserPlus className="w-4 h-4" />
-                Sign Up
+                Skapa konto
               </TabsTrigger>
             </TabsList>
 
@@ -189,7 +189,7 @@ const Login = () => {
                     <Input
                       id="signin-email"
                       type="email"
-                      placeholder="förnamn.efternamn@prefabmastarna.se"
+                      placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
@@ -246,7 +246,7 @@ const Login = () => {
                     <Input
                       id="signup-email"
                       type="email"
-                      placeholder="förnamn.efternamn@prefabmastarna.se"
+                      placeholder="you@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       className="pl-10"
