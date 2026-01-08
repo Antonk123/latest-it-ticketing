@@ -172,11 +172,11 @@ const Login = () => {
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin" className="gap-2">
                 <LogIn className="w-4 h-4" />
-                Sign In
+                Logga in
               </TabsTrigger>
               <TabsTrigger value="signup" className="gap-2">
                 <UserPlus className="w-4 h-4" />
-                Sign Up
+                Skapa konto
               </TabsTrigger>
             </TabsList>
 
@@ -199,13 +199,13 @@ const Login = () => {
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <Label htmlFor="signin-password">Password</Label>
+                    <Label htmlFor="signin-password">Lösenord</Label>
                     <button
                       type="button"
                       className="text-xs text-primary hover:underline"
                       onClick={() => setShowForgotPassword(true)}
                     >
-                      Forgot password?
+                      Glömt lösenord?
                     </button>
                   </div>
                   <div className="relative">
@@ -255,7 +255,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-password">Password</Label>
+                  <Label htmlFor="signup-password">Lösenord</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
@@ -270,7 +270,7 @@ const Login = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="signup-confirm">Confirm Password</Label>
+                  <Label htmlFor="signup-confirm">Bekräfta lösenord</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
                     <Input
