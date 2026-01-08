@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Plus, Pencil, Trash2, Users as UsersIcon, ChevronDown, ChevronUp } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users as UsersIcon, Ticket } from 'lucide-react';
 import { useUsers } from '@/hooks/useUsers';
 import { Layout } from '@/components/Layout';
 import { SearchBar } from '@/components/SearchBar';
@@ -26,10 +26,11 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { User } from '@/types/ticket';
@@ -40,7 +41,7 @@ const UserList = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [formData, setFormData] = useState({ name: '', email: '', department: '' });
-  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const filteredUsers = users.filter(user => {
     if (search === '') return true;
@@ -155,9 +156,9 @@ const UserList = () => {
             </p>
           </div>
         ) : (
-          <div className="columns-1 md:columns-2 lg:columns-3 gap-4 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredUsers.map(user => (
-              <Card key={user.id} className="break-inside-avoid">
+              <Card key={user.id}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
                     <div className="flex-1 min-w-0">
@@ -203,31 +204,32 @@ const UserList = () => {
                     </div>
                   </div>
 
-                  {/* Expandable Ticket History */}
-                  <Collapsible
-                    open={expandedUserId === user.id}
-                    onOpenChange={(open) => setExpandedUserId(open ? user.id : null)}
-                    className="mt-3"
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full mt-3 gap-2"
+                    onClick={() => setSelectedUser(user)}
                   >
-                    <CollapsibleTrigger asChild>
-                      <Button variant="ghost" size="sm" className="w-full justify-between text-muted-foreground hover:text-foreground">
-                        <span>View Ticket History</span>
-                        {expandedUserId === user.id ? (
-                          <ChevronUp className="w-4 h-4" />
-                        ) : (
-                          <ChevronDown className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3 border-t mt-3">
-                      <UserTicketHistory userId={user.id} />
-                    </CollapsibleContent>
-                  </Collapsible>
+                    <Ticket className="w-4 h-4" />
+                    View Tickets
+                  </Button>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
+
+        {/* Ticket History Sheet */}
+        <Sheet open={!!selectedUser} onOpenChange={(open) => !open && setSelectedUser(null)}>
+          <SheetContent className="sm:max-w-lg overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>{selectedUser?.name}'s Tickets</SheetTitle>
+            </SheetHeader>
+            <div className="mt-6">
+              {selectedUser && <UserTicketHistory userId={selectedUser.id} />}
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </Layout>
   );
